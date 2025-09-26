@@ -86,7 +86,7 @@ app_license = "agpl-3.0"
 # ------------
 
 # before_install = "forms_pro.install.before_install"
-# after_install = "forms_pro.install.after_install"
+after_install = "forms_pro.install.after_install"
 
 # Uninstallation
 # ------------
