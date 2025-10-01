@@ -5,6 +5,10 @@ app_description = "Web Forms on steroids!"
 app_email = "developers@buildwithhussain.com"
 app_license = "agpl-3.0"
 
+
+fixtures = [
+    {"dt": "Role", "filters": {"role_name": "Forms Pro User"}},
+]
 # Apps
 # ------------------
 
@@ -86,7 +90,7 @@ app_license = "agpl-3.0"
 # ------------
 
 # before_install = "forms_pro.install.before_install"
-after_install = "forms_pro.install.after_install"
+# after_install = "forms_pro.install.after_install"
 
 # Uninstallation
 # ------------
@@ -239,5 +243,5 @@ export_python_type_annotations = True
 
 
 website_route_rules = [
-	{"from_route": "/frontend/<path:app_path>", "to_route": "frontend"},
+    {"from_route": "/frontend/<path:app_path>", "to_route": "frontend"},
 ]
