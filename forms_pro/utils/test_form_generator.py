@@ -12,7 +12,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
         """Test FormGenerator initialization with existing DocType"""
         # Create a test DocType
         test_doctype = frappe.new_doc("DocType")
-        test_doctype.name = "Test Form DocType"
+        test_doctype.name = frappe.utils.random_string(8)
         test_doctype.module = "Forms Pro"
         test_doctype.custom = True
         test_doctype.insert(ignore_permissions=True)
@@ -22,7 +22,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
 
         # Assertions
         self.assertIsNotNone(form_generator.doctype)
-        self.assertEqual(form_generator.doctype.name, "Test Form DocType")
+        self.assertEqual(form_generator.doctype.name, test_doctype.name)
         self.assertEqual(form_generator.doctype.module, "Forms Pro")
 
     def test_form_generator_initialization_without_doctype(self):
@@ -35,7 +35,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
     def test_generate_doctype_name_format(self):
         """Test that generate_doctype_name returns correct format"""
         form_generator = FormGenerator()
-        doctype_name = form_generator.generate_doctype_name()
+        doctype_name = form_generator._generate_doctype_name()
 
         # Assertions
         self.assertTrue(doctype_name.startswith("formspro_"))
@@ -50,7 +50,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
 
         # Generate multiple names and check uniqueness
         for _ in range(5):
-            name = form_generator.generate_doctype_name()
+            name = form_generator._generate_doctype_name()
             self.assertNotIn(name, names)
             names.add(name)
 
@@ -77,7 +77,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
         """Test that generate() uses existing DocType when provided"""
         # Create a test DocType
         test_doctype = frappe.new_doc("DocType")
-        test_doctype.name = "Test Existing DocType"
+        test_doctype.name = frappe.utils.random_string(8)
         test_doctype.module = "Forms Pro"
         test_doctype.custom = True
         test_doctype.insert(ignore_permissions=True)
@@ -88,7 +88,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
         form_generator.generate()
 
         # Assertions
-        self.assertEqual(form_generator.doctype.name, "Test Existing DocType")
+        self.assertEqual(form_generator.doctype.name, test_doctype.name)
         self.assertIsNotNone(form_generator.form_document)
 
     def test_generate_creates_form_document(self):
@@ -130,7 +130,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
         """Test complete flow when DocType is provided during initialization"""
         # Create a test DocType
         test_doctype = frappe.new_doc("DocType")
-        test_doctype.name = "Test Complete Flow DocType"
+        test_doctype.name = frappe.utils.random_string(8)
         test_doctype.module = "Forms Pro"
         test_doctype.custom = True
         test_doctype.insert(ignore_permissions=True)
@@ -141,7 +141,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
         form_generator.generate()
 
         # Assertions
-        self.assertEqual(form_generator.doctype.name, "Test Complete Flow DocType")
+        self.assertEqual(form_generator.doctype.name, test_doctype.name)
         self.assertIsNotNone(form_generator.form_document)
         self.assertEqual(form_generator.form_document.linked_doctype, form_generator.doctype.name)
 
