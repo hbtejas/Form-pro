@@ -14,7 +14,10 @@ class Form(Document):
     if TYPE_CHECKING:
         from frappe.types import DF
 
+        from forms_pro.forms_pro.doctype.form_field.form_field import FormField
+
         description: DF.TextEditor | None
+        fields: DF.Table[FormField]
         linked_doctype: DF.Link
         metadata: DF.Code | None
         title: DF.Data

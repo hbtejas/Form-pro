@@ -10,6 +10,9 @@
   "linked_doctype",
   "section_break_vdhw",
   "description",
+  "fields_section",
+  "fields",
+  "section_break_bbvo",
   "metadata"
  ],
  "fields": [
@@ -45,12 +48,27 @@
    "fieldname": "metadata",
    "fieldtype": "Code",
    "label": "Meta Data"
+  },
+  {
+   "fieldname": "fields_section",
+   "fieldtype": "Section Break",
+   "label": "Fields"
+  },
+  {
+   "fieldname": "fields",
+   "fieldtype": "Table",
+   "label": "Fields",
+   "options": "Form Field"
+  },
+  {
+   "fieldname": "section_break_bbvo",
+   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-03 20:58:33.010047",
+ "modified": "2025-10-06 03:29:49.038952",
  "modified_by": "Administrator",
  "module": "Forms Pro",
  "name": "Form",
