@@ -39,4 +39,32 @@ class FormField(Document):
         reqd: DF.Check
     # end: auto-generated types
 
-    pass
+    @property
+    def to_frappe_field(self) -> dict:
+        _fieldtype = self.fieldtype
+
+        if self.fieldtype == "Email":
+            _fieldtype = "Data"
+            self.options = "Email"
+        elif self.fieldtype == "Number":
+            _fieldtype = "Int"
+        elif self.fieldtype == "Date Time":
+            _fieldtype = "Datetime"
+        elif self.fieldtype == "Date Range":
+            _fieldtype = "Data"
+        elif self.fieldtype == "Time Picker":
+            _fieldtype = "Time"
+        elif self.fieldtype == "Switch":
+            _fieldtype = "Check"
+        elif self.fieldtype == "Textarea":
+            _fieldtype = "Text"
+
+        return {
+            "fieldname": self.fieldname,
+            "fieldtype": _fieldtype,
+            "label": self.label,
+            "reqd": self.reqd,
+            "options": self.options,
+            "description": self.description,
+            "default": self.default,
+        }
