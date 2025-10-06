@@ -1,2 +1,32 @@
 @import "./assets/Inter/inter.css";
 @import "frappe-ui/src/style.css";
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
+@font-face {
+	font-family: "Instrument Serif";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("./assets/Instrument_Serif/InstrumentSerif-Regular.woff2") format("woff2"),
+		url("./assets/Instrument_Serif/InstrumentSerif-Regular.woff") format("woff");
+}
+
+.form-description {
+	h1 , h2, h3 {
+		@apply text-xl font-bold;
+	}
+	h4,
+	h5 {
+		@apply text-lg font-bold;
+	}
+	h6 {
+		@apply text-base font-bold;
+	}
+	p, li {
+		@apply text-base font-normal;
+	}
+
+	.is-empty {
+		@apply text-base font-normal;
+	}
+}
