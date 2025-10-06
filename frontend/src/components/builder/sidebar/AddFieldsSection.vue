@@ -1,0 +1,51 @@
+<script setup>
+import { ref, computed } from "vue";
+import { formFields } from "@/utils/form_fields";
+import { FormControl, Button } from "frappe-ui";
+import { useEditForm } from "@/stores/editForm";
+
+const search = ref("");
+const componentMap = formFields.reduce((acc, field) => {
+    acc[field.name] = field.component;
+    return acc;
+}, {});
+
+const filteredComponents = computed(() => {
+    return Object.keys(componentMap).filter((component) =>
+        component.toLowerCase().includes(search.value.toLowerCase())
+    );
+});
+
+const editFormStore = useEditForm();
+</script>
+<template>
+    <div class="space-y-4">
+        <h3 class="text-lg font-medium">Add Fields</h3>
+        <div class="flex flex-col gap-3">
+            <FormControl
+                v-model="search"
+                type="search"
+                variant="outline"
+                placeholder="Search Fields"
+            />
+            <div v-for="component in filteredComponents" :key="component">
+                <div
+                    class="p-2 bg-gray-50 rounded flex flex-col gap-2 border border-gray-200 hover:border-gray-400 hover:cursor-grab transition-all relative group"
+                >
+                    <div class="text-sm">{{ component }}</div>
+                    <component
+                        :is="componentMap[component]"
+                        class="pointer-events-none"
+                        variant="outline"
+                    />
+                    <Button
+                        class="absolute top-4 -right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                        variant="outline"
+                        icon="plus"
+                        @click="editFormStore.addField(component)"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
