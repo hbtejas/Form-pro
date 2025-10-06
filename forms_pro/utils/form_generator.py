@@ -42,24 +42,24 @@ class FormGenerator:
         placeholder_doctype.insert(ignore_permissions=True)
 
         self.doctype = placeholder_doctype
-        self.set_placeholder_doctype_fields()
+        # self.set_placeholder_doctype_fields()
 
-    def set_placeholder_doctype_fields(self) -> None:
-        fields = [
-            {
-                "label": "Is Form Pro DocType",
-                "fieldname": "is_forms_pro_doctype",
-                "fieldtype": "Check",
-                "reqd": 1,
-                "read_only": 1,
-                "default": 1,
-            }
-        ]
+    # def set_placeholder_doctype_fields(self) -> None:
+    #     fields = [
+    #         {
+    #             "label": "Is Form Pro DocType",
+    #             "fieldname": "is_forms_pro_doctype",
+    #             "fieldtype": "Check",
+    #             "reqd": 1,
+    #             "read_only": 1,
+    #             "default": 1,
+    #         }
+    #     ]
 
-        for field in fields:
-            self.doctype.append("fields", field)
+    #     for field in fields:
+    #         self.doctype.append("fields", field)
 
-        self.doctype.save(ignore_permissions=True)
+    #     self.doctype.save(ignore_permissions=True)
 
     def _initialize_form_document(self) -> None:
         form_document = frappe.new_doc("Form")
