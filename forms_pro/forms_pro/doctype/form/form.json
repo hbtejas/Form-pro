@@ -5,8 +5,11 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "title",
   "column_break_ixmm",
+  "is_published",
+  "route",
+  "column_break_pqae",
+  "title",
   "linked_doctype",
   "section_break_vdhw",
   "description",
@@ -63,12 +66,27 @@
   {
    "fieldname": "section_break_bbvo",
    "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_published",
+   "fieldtype": "Check",
+   "label": "Is Published?"
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "label": "Route"
+  },
+  {
+   "fieldname": "column_break_pqae",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-06 03:29:49.038952",
+ "modified": "2025-10-06 15:55:10.170370",
  "modified_by": "Administrator",
  "module": "Forms Pro",
  "name": "Form",
