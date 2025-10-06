@@ -8,7 +8,19 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AddFieldsSection: typeof import('./src/components/builder/sidebar/AddFieldsSection.vue')['default']
+    FieldEditorSidebar: typeof import('./src/components/FieldEditorSidebar.vue')['default']
+    FieldPropertiesForm: typeof import('./src/components/builder/FieldPropertiesForm.vue')['default']
+    FieldRenderer: typeof import('./src/components/builder/FieldRenderer.vue')['default']
+    FormBuilderContent: typeof import('./src/components/FormBuilderContent.vue')['default']
+    FormBuilderHeader: typeof import('./src/components/FormBuilderHeader.vue')['default']
+    FormBuilderSidebar: typeof import('./src/components/FormBuilderSidebar.vue')['default']
+    Icon: typeof import('./src/components/Icon.vue')['default']
+    Logo: typeof import('./src/components/Logo.vue')['default']
+    RenderField: typeof import('./src/components/RenderField.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Section: typeof import('./src/components/fields/Section.vue')['default']
+    SettingsSection: typeof import('./src/components/builder/sidebar/SettingsSection.vue')['default']
   }
 }
