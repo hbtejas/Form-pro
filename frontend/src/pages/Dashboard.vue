@@ -39,7 +39,15 @@
             />
             <div class="flex flex-col gap-2">
                 <h3 class="font-medium">Recents</h3>
-                <p class="text-sm text-gray-500">No forms created yet</p>
+                <p class="text-sm text-gray-500" v-if="userForms.loading">Loading...</p>
+                <p class="text-sm text-gray-500" v-else-if="userForms.data?.length === 0">
+                    No forms created yet
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" v-else>
+                    <div v-for="form in userForms.data" :key="form.name">
+                        <FormPreviewCard :form="form" />
+                    </div>
+                </div>
             </div>
         </div>
     </BaseLayout>
@@ -50,8 +58,9 @@ import BaseLayout from "@/layouts/BaseLayout.vue";
 import { useRouter } from "vue-router";
 import { createNewForm } from "@/utils/form_generator";
 import { ref } from "vue";
-import { Dropdown, Dialog, FormControl } from "frappe-ui";
-
+import { Dropdown, Dialog, FormControl, createListResource, Card } from "frappe-ui";
+import { session } from "@/data/session";
+import FormPreviewCard from "@/components/dashboard/FormPreviewCard.vue";
 const router = useRouter();
 const showSelectDoctypeDialog = ref(false);
 
@@ -65,4 +74,15 @@ const handleCreateDraftForm = async () => {
         },
     });
 };
+
+const userForms = createListResource({
+    doctype: "Form",
+    filters: {
+        owner: session.user,
+    },
+    fields: ["name", "title", "creation", "modified", "is_published", "route"],
+    orderBy: "modified desc",
+    auto: true,
+    pageLength: 9999,
+});
 </script>
