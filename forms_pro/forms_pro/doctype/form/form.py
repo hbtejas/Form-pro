@@ -32,7 +32,7 @@ class Form(Document):
         return frappe.get_doc("DocType", self.linked_doctype)
 
     def generate_initial_route(self) -> str:
-        return "s/" + self.linked_doctype + self.name
+        return "s/" + frappe.utils.random_string(5) + self.name
 
     def before_insert(self) -> None:
         self.status = "Draft"
