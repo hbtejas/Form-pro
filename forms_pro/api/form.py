@@ -22,3 +22,14 @@ def get_form(form_id: str) -> dict:
         "is_published": form.is_published,
         "allow_incomplete": form.allow_incomplete,
     }
+
+
+@frappe.whitelist(allow_guest=True)
+def get_doctype_list() -> list[str]:
+    return frappe.db.get_list(
+        "DocType",
+        filters={"istable": 0},
+        pluck="name",
+        order_by="name",
+        limit_page_length=99999,
+    )

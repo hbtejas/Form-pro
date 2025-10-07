@@ -8,8 +8,27 @@
         >
             <template #body-content>
                 <div class="flex flex-col gap-2">
-                    <FormControl label="DocType" type="select" :options="doctypes" />
+                    <label class="text-sm font-medium">DocType</label>
+                    <Combobox
+                        v-model="selectedDoctype"
+                        :options="doctypes.data"
+                        label="DocType"
+                        id="doctype"
+                    />
                 </div>
+            </template>
+            <template #actions="{ close }">
+                <Button
+                    class="w-full"
+                    variant="solid"
+                    :disabled="!selectedDoctype"
+                    @click="
+                        () => {
+                            handleCreateDraftFormWithDoctype(selectedDoctype.value);
+                        }
+                    "
+                    >Create</Button
+                >
             </template>
         </Dialog>
         <div class="p-4 flex flex-col gap-4 w-full">
@@ -56,17 +75,34 @@
 <script setup>
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import { useRouter } from "vue-router";
-import { createNewForm } from "@/utils/form_generator";
 import { ref } from "vue";
-import { Dropdown, Dialog, FormControl, createListResource, Card } from "frappe-ui";
+import {
+    Dropdown,
+    Dialog,
+    FormControl,
+    createListResource,
+    Card,
+    createResource,
+    Combobox,
+} from "frappe-ui";
 import { session } from "@/data/session";
+import { createNewFormWithDoctype, createNewForm } from "@/utils/form_generator";
 import FormPreviewCard from "@/components/dashboard/FormPreviewCard.vue";
 const router = useRouter();
 const showSelectDoctypeDialog = ref(false);
 
+const handleCreateDraftFormWithDoctype = async () => {
+    const data = await createNewFormWithDoctype(selectedDoctype.value);
+    router.push({
+        name: "Edit Form",
+        params: {
+            id: data.form_document,
+        },
+    });
+};
+
 const handleCreateDraftForm = async () => {
     const data = await createNewForm();
-    console.log(data);
     router.push({
         name: "Edit Form",
         params: {
@@ -85,4 +121,10 @@ const userForms = createListResource({
     auto: true,
     pageLength: 9999,
 });
+
+const doctypes = createResource({
+    url: "forms_pro.api.form.get_doctype_list",
+    auto: true,
+});
+const selectedDoctype = ref(null);
 </script>

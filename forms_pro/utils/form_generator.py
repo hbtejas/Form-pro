@@ -4,6 +4,21 @@ FORMS_PRO_ROLE = "Forms Pro User"
 
 
 @frappe.whitelist()
+def create_form_with_doctype(doctype: str):
+    roles = frappe.get_roles(frappe.session.user)
+    if FORMS_PRO_ROLE not in roles:
+        frappe.throw("You are not authorized to create a form")
+
+    form_generator = FormGenerator(linked_doctype=doctype)
+    form_generator.generate()
+
+    return {
+        "doctype": form_generator.doctype.name,
+        "form_document": form_generator.form_document.name,
+    }
+
+
+@frappe.whitelist()
 def create_form():
     roles = frappe.get_roles(frappe.session.user)
     if FORMS_PRO_ROLE not in roles:
