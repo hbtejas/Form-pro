@@ -79,6 +79,11 @@ export const TextEditorField = {
   props: {},
 };
 
+export const CheckboxField = {
+  component: Checkbox,
+  props: {},
+};
+
 export const formFields = [
   { name: "Data", ...DataField },
   { name: "Number", ...NumberField },
@@ -93,4 +98,55 @@ export const formFields = [
   { name: "Switch", ...SwitchField },
   { name: "Textarea", ...TextareaField },
   { name: "Text Editor", ...TextEditorField },
+  { name: "Checkbox", ...CheckboxField },
 ];
+
+export const mapDoctypeFieldForForm = (fieldtype: string): string => {
+  const FIELD_TYPE_MAP = {
+    Autocomplete: "Data",
+    Attach: "File Uploader",
+    "Attach Image": "File Uploader",
+    Barcode: "Barcode",
+    Button: "Button",
+    Check: "Checkbox",
+    Code: "Code",
+    Color: "Color",
+    "Column Break": "Column Break",
+    Currency: "Number",
+    Data: "Data",
+    Date: "Date",
+    Datetime: "Date Time",
+    Duration: "Duration",
+    "Dynamic Link": "Dynamic Link",
+    Float: "Number",
+    Fold: "Fold",
+    Geolocation: "Geolocation",
+    Heading: "Heading",
+    HTML: "HTML",
+    "HTML Editor": "Text Editor",
+    Icon: "Icon",
+    Image: "Image",
+    Int: "Number",
+    JSON: "JSON",
+    Link: "Link",
+    "Long Text": "Textarea",
+    "Markdown Editor": "Text Editor",
+    Password: "Password",
+    Percent: "Number",
+    Phone: "Phone",
+    "Read Only": "Read Only",
+    Rating: "Rating",
+    "Section Break": "Section Break",
+    Select: "Select",
+    Signature: "Signature",
+    "Small Text": "Textarea",
+    "Tab Break": "Tab Break",
+    Table: "Table",
+    "Table MultiSelect": "Table MultiSelect",
+    Text: "Textarea",
+    "Text Editor": "Text Editor",
+    Time: "Time",
+  };
+
+  return FIELD_TYPE_MAP[fieldtype as keyof typeof FIELD_TYPE_MAP];
+};

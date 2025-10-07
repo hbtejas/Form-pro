@@ -24,7 +24,28 @@ def get_form(form_id: str) -> dict:
     }
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
+def get_doctype_fields(doctype: str) -> dict:
+    doctype = frappe.get_doc("DocType", doctype)
+    fields = doctype.fields
+
+    FIELDTYPES_TO_REMOVE = [
+        "Section Break",
+        "HTML",
+        "Button",
+        "Column Break",
+        "Tab Break",
+        "Barcode",
+        "Dynamic Link",
+        "Fold",
+    ]
+
+    fields = [field for field in fields if field.fieldtype not in FIELDTYPES_TO_REMOVE]
+
+    return fields
+
+
+@frappe.whitelist()
 def get_doctype_list() -> list[str]:
     return frappe.db.get_list(
         "DocType",

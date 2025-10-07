@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AddFieldsSection: typeof import('./src/components/builder/sidebar/AddFieldsSection.vue')['default']
+    DoctypeFieldsSection: typeof import('./src/components/builder/sidebar/DoctypeFieldsSection.vue')['default']
     FieldEditorSidebar: typeof import('./src/components/FieldEditorSidebar.vue')['default']
     FieldPropertiesForm: typeof import('./src/components/builder/FieldPropertiesForm.vue')['default']
     FieldRenderer: typeof import('./src/components/builder/FieldRenderer.vue')['default']

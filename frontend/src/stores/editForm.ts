@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { createDocumentResource } from "frappe-ui";
+import { createDocumentResource, createResource } from "frappe-ui";
+import { mapDoctypeFieldForForm } from "@/utils/form_fields";
 import { FormField } from "@/types/formfield";
 import { Form } from "@/types/form";
 import { toast } from "vue-sonner";
@@ -23,6 +24,8 @@ export const useEditForm = defineStore("editForm", () => {
     () => formResource.value?.doc?.is_published || false,
   );
 
+  const doctypeFields = ref<any>([]);
+
   const isError = computed(() => formResource.value?.error || false);
   const formData = computed(() => formResource.value?.doc || null);
   const fields = computed(() => {
@@ -31,6 +34,30 @@ export const useEditForm = defineStore("editForm", () => {
   const originalFormData = computed(
     () => formResource.value?.originalDoc || null,
   );
+
+  async function getDoctypeFields() {
+    if (formResource.value?.doc?.linked_doctype) {
+      const _fields = createResource({
+        url: "forms_pro.api.form.get_doctype_fields",
+        makeParams() {
+          return {
+            doctype: formResource.value?.doc?.linked_doctype,
+          };
+        },
+        transform: (data: any) => {
+          return data.map((field: any) => {
+            return {
+              ...field,
+              fieldtype: mapDoctypeFieldForForm(field.fieldtype),
+            };
+          });
+        },
+      });
+
+      await _fields.fetch();
+      doctypeFields.value = _fields.data;
+    }
+  }
 
   function initialize(formId: string) {
     if (formId !== currentFormId.value) {
@@ -43,6 +70,9 @@ export const useEditForm = defineStore("editForm", () => {
             ...doc,
             title: doc.title === "Untitled Form" ? "" : doc.title,
           };
+        },
+        onSuccess: () => {
+          getDoctypeFields();
         },
       });
     }
@@ -142,6 +172,20 @@ export const useEditForm = defineStore("editForm", () => {
     }
   }
 
+  function addFieldFromDoctype(field: any) {
+    const _newField: FormField = {
+      idx: formResource.value.doc.fields.length + 1,
+      fieldtype: field.fieldtype,
+      label: field.label,
+      fieldname: field.fieldname,
+      options: field.options,
+      default: field.default,
+      description: field.description,
+    };
+
+    formResource.value.doc.fields.push(_newField);
+  }
+
   function removeField(field: FormField) {
     if (formResource.value?.doc?.fields) {
       formResource.value.doc.fields = formResource.value.doc.fields.filter(
@@ -179,6 +223,7 @@ export const useEditForm = defineStore("editForm", () => {
     fields,
     selectedField,
     isPublished,
+    doctypeFields,
 
     // Actions
     initialize,
@@ -189,6 +234,7 @@ export const useEditForm = defineStore("editForm", () => {
     togglePublish,
     updateFormData,
     addField,
+    addFieldFromDoctype,
     selectField,
     updateField,
     removeField,

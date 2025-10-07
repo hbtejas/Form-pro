@@ -1,9 +1,10 @@
 <script setup>
-import { Settings, Plus } from "lucide-vue-next";
+import { Settings, Plus, StretchHorizontal } from "lucide-vue-next";
 import { ref } from "vue";
 import { Tooltip } from "frappe-ui";
 import AddFieldsSection from "@/components/builder/sidebar/AddFieldsSection.vue";
 import SettingsSection from "@/components/builder/sidebar/SettingsSection.vue";
+import DocTypeFieldsSection from "@/components/builder/sidebar/DoctypeFieldsSection.vue";
 
 const sidebarSections = ref([
     {
@@ -17,6 +18,12 @@ const sidebarSections = ref([
         label: "Add Fields",
         icon: Plus,
         section: AddFieldsSection,
+    },
+    {
+        id: 2,
+        label: "DocType Fields",
+        icon: StretchHorizontal,
+        section: DocTypeFieldsSection,
     },
 ]);
 
