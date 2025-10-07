@@ -69,18 +69,30 @@ const openFormSubmissionPage = () => {
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <Button
-                v-if="editFormStore.isUnsaved"
-                label="Save"
-                variant="solid"
-                @click="editFormStore.save"
-                :loading="editFormStore.formResource?.loading"
-            />
+            <div v-if="editFormStore.isUnsaved">
+                <Button
+                    v-if="editFormStore.isPublished"
+                    label="Save and publish"
+                    icon-left="globe"
+                    variant="solid"
+                    @click="editFormStore.saveAndPublish"
+                    :loading="editFormStore.formResource?.loading"
+                />
+                <Button
+                    v-else
+                    label="Save"
+                    variant="solid"
+                    @click="editFormStore.save"
+                    :loading="editFormStore.formResource?.loading"
+                />
+            </div>
             <Button
                 v-else
-                label="Publish"
-                icon-left="globe"
-                variant="solid"
+                :label="editFormStore.isPublished ? 'Unpublish' : 'Publish'"
+                :icon-left="editFormStore.isPublished ? '' : 'globe'"
+                :variant="editFormStore.isPublished ? 'subtle' : 'solid'"
+                :theme="editFormStore.isPublished ? 'red' : 'gray'"
+                :loading="editFormStore.formResource?.loading"
                 @click="editFormStore.togglePublish"
             />
         </div>

@@ -90,6 +90,13 @@ export const useEditForm = defineStore("editForm", () => {
     return Promise.reject(new Error("No form resource available"));
   }
 
+  function saveAndPublish() {
+    if (formResource.value) {
+      formResource.value.doc.is_published = 1;
+      save();
+    }
+  }
+
   function togglePublish() {
     if (formResource.value?.doc) {
       formResource.value.setValue.submit(
@@ -177,6 +184,7 @@ export const useEditForm = defineStore("editForm", () => {
     reload,
     reset,
     save,
+    saveAndPublish,
     togglePublish,
     updateFormData,
     addField,
