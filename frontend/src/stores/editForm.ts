@@ -73,6 +73,7 @@ export const useEditForm = defineStore("editForm", () => {
           fields: formResource.value.doc.fields,
           description: formResource.value.doc.description,
           route: formResource.value.doc.route,
+          allow_incomplete: formResource.value.doc.allow_incomplete,
         },
         {
           onSuccess: () => {

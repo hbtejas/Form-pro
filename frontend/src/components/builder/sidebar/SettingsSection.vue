@@ -1,5 +1,5 @@
 <script setup>
-import { FormControl } from "frappe-ui";
+import { Checkbox, FormControl } from "frappe-ui";
 import { useEditForm } from "@/stores/editForm";
 import { validateFormRoute } from "@/utils/form_generator";
 import { ref } from "vue";
@@ -37,8 +37,8 @@ const validateRoute = async () => {
                 disabled
             />
 
-            <h5 class="text-sm font-medium mt-3">Form Properties</h5>
-            <div class="space-y-1">
+            <h5 class="text-sm font-medium mt-4 mb-1">Form Properties</h5>
+            <div class="space-y-6">
                 <FormControl
                     required
                     label="Route"
@@ -56,6 +56,12 @@ const validateRoute = async () => {
                         <CircleCheck class="w-4 h-4" /> Route is available</span
                     >
                 </div>
+                <Checkbox
+                    size="sm"
+                    label="Allow Incomplete Forms"
+                    variant="outline"
+                    v-model="editFormStore.formData.allow_incomplete"
+                />
             </div>
         </div>
     </div>

@@ -11,6 +11,10 @@
   "column_break_pqae",
   "title",
   "linked_doctype",
+  "settings_section",
+  "login_required",
+  "column_break_xocw",
+  "allow_incomplete",
   "section_break_vdhw",
   "description",
   "fields_section",
@@ -81,12 +85,34 @@
   {
    "fieldname": "column_break_pqae",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "settings_section",
+   "fieldtype": "Section Break",
+   "label": "Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "login_required",
+   "fieldtype": "Check",
+   "label": "Login Required"
+  },
+  {
+   "fieldname": "column_break_xocw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "description": "Allow saving Draft forms",
+   "fieldname": "allow_incomplete",
+   "fieldtype": "Check",
+   "label": "Allow Incomplete Forms"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-06 15:55:10.170370",
+ "modified": "2025-10-07 12:16:18.825427",
  "modified_by": "Administrator",
  "module": "Forms Pro",
  "name": "Form",

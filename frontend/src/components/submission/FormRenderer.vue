@@ -28,9 +28,15 @@ const getComponent = (fieldtype: string) => {
         </div>
         <hr />
         <ErrorMessage :message="submissionFormStore.errors.join('\n')" />
-        <div class="flex justify-end">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <Button
-                class="w-1/2"
+                v-if="submissionFormStore.allowIncompleteForms"
+                @click="submissionFormStore.saveAsDraft"
+                :loading="submissionFormStore.isLoading"
+            >
+                Save as draft
+            </Button>
+            <Button
                 variant="solid"
                 @click="
                     () => {

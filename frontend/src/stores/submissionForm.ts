@@ -1,40 +1,37 @@
 import { createResource } from "frappe-ui";
+import { toast } from "vue-sonner";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { FormField } from "@/types/formfield";
+import { useStorage } from "@vueuse/core";
 
 export const useSubmissionForm = defineStore("submissionForm", () => {
   const formResource = ref<any>(null);
   const currentFormId = ref<string | null>(null);
   const isLoading = computed(() => formResource.value?.loading);
+  const allowIncompleteForms = computed(
+    () => formResource.value?.data?.allow_incomplete ,
+  );
+
   const errors = ref<string[]>([]);
   const successSubmission = ref<number>(0);
   const inFormSubmission = ref<number>(1);
 
-  const fields = computed({
-    get() {
-      if (!formResource.value?.data) return {};
+  const fields = ref<Record<string, any>>({});
 
-      let _fields: Record<string, any> = {};
-      formResource.value.data.fields.forEach((field: FormField) => {
-        _fields[field.fieldname] = "";
-        if (field.default) {
-          _fields[field.fieldname] = field.default;
-        }
-      });
+  function initializeFields() {
+    if (!formResource.value?.data) return;
 
-      return _fields;
-    },
+    let _fields: Record<string, any> = {};
+    formResource.value.data.fields.forEach((field: FormField) => {
+      _fields[field.fieldname] = "";
+      if (field.default) {
+        _fields[field.fieldname] = field.default;
+      }
+    });
 
-    set(value: any) {
-      formResource.value.data.fields = value.map((field: FormField) => {
-        return {
-          ...field,
-          value: value[field.fieldname],
-        };
-      });
-    },
-  });
+    fields.value = _fields;
+  }
 
   async function initialize(route: string) {
     currentFormId.value = route;
@@ -43,11 +40,37 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
       params: {
         route: route,
       },
-      onSuccess() {
+      onSuccess(data: any) {
+        // Initialize fields with defaults first
+        initializeFields();
+
+        // Use VueUse's useStorage for reactive draft data
+        const draftKey = `draft_submission_data_${data.name}`;
+        const draftData = useStorage(draftKey, {}, localStorage);
+
+        if (draftData.value && Object.keys(draftData.value).length > 0) {
+          // Merge draft data with initialized fields
+          fields.value = { ...fields.value, ...draftData.value };
+        }
+
         inFormSubmission.value = 1;
       },
     });
     await formResource.value.fetch();
+  }
+
+  function saveAsDraft() {
+    errors.value = [];
+
+    if (!formResource.value?.data?.name) {
+      toast.error("Form not loaded");
+      return;
+    }
+
+    const draftKey = `draft_submission_data_${formResource.value.data.name}`;
+    const draftData = useStorage(draftKey, {}, localStorage);
+    draftData.value = fields.value;
+    toast.success("Draft saved successfully");
   }
 
   async function submitForm() {
@@ -68,6 +91,7 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
         };
       },
       onSuccess() {
+        clearDraft();
         inFormSubmission.value = 0;
         successSubmission.value = 1;
       },
@@ -85,15 +109,23 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
     });
   }
 
+  function clearDraft() {
+    const draftKey = `draft_submission_data_${formResource.value.data.name}`;
+    const draftData = useStorage(draftKey, {}, localStorage);
+    draftData.value = {};
+  }
+
   return {
     formResource,
     currentFormId,
     fields,
     isLoading,
+    allowIncompleteForms,
     errors,
     successSubmission,
     inFormSubmission,
     initialize,
     submitForm,
+    saveAsDraft,
   };
 });

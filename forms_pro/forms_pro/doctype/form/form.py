@@ -16,10 +16,12 @@ class Form(Document):
 
         from forms_pro.forms_pro.doctype.form_field.form_field import FormField
 
+        allow_incomplete: DF.Check
         description: DF.TextEditor | None
         fields: DF.Table[FormField]
         is_published: DF.Check
         linked_doctype: DF.Link
+        login_required: DF.Check
         metadata: DF.Code | None
         route: DF.Data | None
         title: DF.Data
