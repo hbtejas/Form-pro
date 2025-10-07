@@ -13,6 +13,11 @@ const routes = [
         name: "Edit Form",
         component: () => import("@/pages/EditForm.vue"),
     },
+    {
+        path: "/p/:route",
+        name: "Form Submission Page",
+        component: () => import("@/pages/SubmissionPage.vue"),
+    },
 ];
 
 const router = createRouter({

@@ -396,6 +396,18 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
+"@lottiefiles/dotlottie-vue@^0.10.4":
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/@lottiefiles/dotlottie-vue/-/dotlottie-vue-0.10.4.tgz#0f7b905daae148b8a0b741caef6acd40a0ab8bcd"
+  integrity sha512-3A2JKV9wtpWVF5IIl/vFZIoWoe7qey+tQq7v76H+yjhGhAkHIpQHlpDWGJ7AD6TjQymjQHgZfyzPiLxTcd5HVQ==
+  dependencies:
+    "@lottiefiles/dotlottie-web" "0.54.0"
+
+"@lottiefiles/dotlottie-web@0.54.0":
+  version "0.54.0"
+  resolved "https://registry.yarnpkg.com/@lottiefiles/dotlottie-web/-/dotlottie-web-0.54.0.tgz#8795b141cf6ea0c3fd2cf2105347ec97d12216f2"
+  integrity sha512-Jc/n4i9siOXo9/1CVhKkrWC8pxxsKqKwxYfrL4DFQP/cLUAeAO0TqFPQFx9Klh1m7T+/1RPFriycOcF8gW3ZtQ==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -3549,6 +3561,11 @@ yaml@^2.3.4:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.8.1.tgz#1870aa02b631f7e8328b93f8bc574fac5d6c4d79"
   integrity sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==
+
+zod@^4.1.12:
+  version "4.1.12"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-4.1.12.tgz#64f1ea53d00eab91853195653b5af9eee68970f0"
+  integrity sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==
 
 zrender@5.6.1:
   version "5.6.1"

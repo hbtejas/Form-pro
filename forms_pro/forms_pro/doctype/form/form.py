@@ -31,6 +31,14 @@ class Form(Document):
     def linked_doctype_doc(self) -> Document:
         return frappe.get_doc("DocType", self.linked_doctype)
 
+    def generate_initial_route(self) -> str:
+        return "s/" + self.linked_doctype + self.name
+
+    def before_insert(self) -> None:
+        self.status = "Draft"
+        self.is_published = False
+        self.route = self.generate_initial_route()
+
     def on_update(self) -> None:
         self.set_doctype_fields()
 

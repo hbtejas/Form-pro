@@ -15,6 +15,9 @@ declare module 'vue' {
     FormBuilderContent: typeof import('./src/components/FormBuilderContent.vue')['default']
     FormBuilderHeader: typeof import('./src/components/FormBuilderHeader.vue')['default']
     FormBuilderSidebar: typeof import('./src/components/FormBuilderSidebar.vue')['default']
+    FormHeader: typeof import('./src/components/submission/FormHeader.vue')['default']
+    FormPreviewCard: typeof import('./src/components/dashboard/FormPreviewCard.vue')['default']
+    FormRenderer: typeof import('./src/components/submission/FormRenderer.vue')['default']
     Icon: typeof import('./src/components/Icon.vue')['default']
     Logo: typeof import('./src/components/Logo.vue')['default']
     RenderField: typeof import('./src/components/RenderField.vue')['default']
@@ -22,5 +25,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Section: typeof import('./src/components/fields/Section.vue')['default']
     SettingsSection: typeof import('./src/components/builder/sidebar/SettingsSection.vue')['default']
+    SuccessSection: typeof import('./src/components/submission/SuccessSection.vue')['default']
   }
 }

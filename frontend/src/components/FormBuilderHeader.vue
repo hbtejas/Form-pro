@@ -1,11 +1,24 @@
 <script setup lang="ts">
 import { Badge, Popover, Tooltip } from "frappe-ui";
-import { ChevronDown, CloudCheck } from "lucide-vue-next";
+import { ChevronDown, CloudCheck, ExternalLink } from "lucide-vue-next";
 import { Button } from "frappe-ui";
 import { useEditForm } from "@/stores/editForm";
+import { useRouter } from "vue-router";
 import Logo from "@/assets/Logo.vue";
 
+const router = useRouter();
 const editFormStore = useEditForm();
+
+const openFormSubmissionPage = () => {
+    const routeData = router.resolve({
+        name: "Form Submission Page",
+        params: {
+            route: editFormStore.originalFormData?.route,
+        },
+    });
+
+    window.open(routeData.href, "_blank");
+};
 </script>
 <template>
     <header
@@ -44,10 +57,15 @@ const editFormStore = useEditForm();
             <h3 class="text-base font-medium text-gray-600 text-center">
                 {{ editFormStore.originalFormData?.title || "Untitled Form" }}
             </h3>
-            <div class="flex items-center">
+            <div class="flex items-center gap-1">
                 <span v-if="editFormStore.originalFormData?.route" class="text-base text-gray-600">
                     /{{ editFormStore.originalFormData?.route }}
                 </span>
+                <Tooltip text="Open in new tab" placement="bottom">
+                    <Button variant="ghost" @click="openFormSubmissionPage">
+                        <ExternalLink class="w-4 h-4 text-gray-500" />
+                    </Button>
+                </Tooltip>
             </div>
         </div>
         <div class="flex items-center gap-2">
