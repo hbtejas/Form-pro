@@ -1,5 +1,6 @@
 <script setup>
 import { formFields } from "@/utils/form_fields";
+import { computed } from "vue";
 const props = defineProps({
     field: {
         type: Object,
@@ -7,10 +8,10 @@ const props = defineProps({
     },
 });
 
-const getComponent = (type) => {
-    return formFields.find((field) => field.name === type)?.component;
-};
+const getComponent = computed(() => {
+    return formFields.find((field) => field.name === props.field.fieldtype);
+});
 </script>
 <template>
-    <component :is="getComponent(props.field.fieldtype)" :field="props.field" variant="outline" />
+    <component :is="getComponent.component" :field="props.field" v-bind="getComponent.props" />
 </template>

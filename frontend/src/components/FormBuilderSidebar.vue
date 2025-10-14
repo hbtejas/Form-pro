@@ -49,7 +49,7 @@ const activeSection = ref(sidebarSections.value[1]);
                 />
             </Tooltip>
         </div>
-        <div class="flex flex-col gap-4 w-full p-4">
+        <div class="flex flex-col gap-4 w-full p-4 overflow-x-hidden">
             <component :is="activeSection.section" />
         </div>
     </div>

@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { formFields } from "@/utils/form_fields";
 import { FormControl, Button } from "frappe-ui";
 import { useEditForm } from "@/stores/editForm";
+import RenderField from "@/components/RenderField.vue";
 
 const search = ref("");
 const componentMap = formFields.reduce((acc, field) => {
@@ -30,14 +31,10 @@ const editFormStore = useEditForm();
             />
             <div v-for="component in filteredComponents" :key="component">
                 <div
-                    class="p-2 bg-gray-50 rounded flex flex-col gap-2 border border-gray-200 hover:border-gray-400 hover:cursor-grab transition-all relative group"
+                    class="p-2 bg-gray-50 w-full rounded flex flex-col gap-2 border border-gray-200 hover:border-gray-400 transition-all relative group"
                 >
                     <div class="text-sm">{{ component }}</div>
-                    <component
-                        :is="componentMap[component]"
-                        class="pointer-events-none"
-                        variant="outline"
-                    />
+                    <RenderField class="pointer-events-none" :field="{ fieldtype: component }" />
                     <Button
                         class="absolute top-4 -right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         variant="outline"
