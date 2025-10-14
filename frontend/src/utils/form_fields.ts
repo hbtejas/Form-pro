@@ -17,42 +17,60 @@ import {
 // Individual form field components as dictionaries
 export const DataField = {
   component: FormControl,
-  props: { type: "text" },
+  props: { type: "text", variant: "outline" },
 };
 
 export const NumberField = {
   component: FormControl,
-  props: { type: "number" },
+  props: { type: "number", variant: "outline" },
 };
 
 export const EmailField = {
   component: FormControl,
-  props: { type: "email" },
+  props: { type: "email", variant: "outline" },
 };
 
 export const DateField = {
   component: DatePicker,
-  props: {},
+  props: {
+    variant: "outline",
+    clearable: true,
+    format: "D MMM YYYY",
+  },
 };
 
 export const DateTimeField = {
   component: DateTimePicker,
-  props: {},
+  props: {
+    format: "DD MMM YYYY, hh:mm A",
+    clearable: true,
+    variant: "outline",
+  },
 };
 
 export const DateRangeField = {
   component: DateRangePicker,
-  props: {},
+  props: {
+    clearable: true,
+    variant: "outline",
+    format: "DD MMM 'YY",
+  },
 };
 
 export const TimeField = {
   component: TimePicker,
-  props: {},
+  props: {
+    variant: "outline",
+    use12Hour: true,
+    clearable: true,
+  },
 };
 
 export const PasswordField = {
   component: Password,
-  props: {},
+  props: {
+    variant: "outline",
+  },
 };
 
 export const RatingField = {
@@ -62,6 +80,9 @@ export const RatingField = {
 
 export const SelectField = {
   component: Select,
+  props: {
+    variant: "outline",
+  },
 };
 
 export const SwitchField = {
@@ -71,12 +92,23 @@ export const SwitchField = {
 
 export const TextareaField = {
   component: Textarea,
-  props: {},
+  props: {
+    variant: "outline",
+  },
 };
 
 export const TextEditorField = {
   component: TextEditor,
-  props: {},
+  props: {
+    editorClass: "bg-surface-white w-full rounded-b form-description",
+    fixedMenu: true,
+    bubbleMenu: true,
+    starterkitOptions: {
+      heading: {
+        levels: [2, 3, 4],
+      },
+    },
+  },
 };
 
 export const CheckboxField = {
