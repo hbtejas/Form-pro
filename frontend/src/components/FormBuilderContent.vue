@@ -37,7 +37,7 @@ onClickOutside(fieldContentRef, (event) => {
     </div>
     <div
         v-if="editFormStore.formData"
-        class="bg-secondary min-h-[800px] w-1/2 border rounded my-12 p-4 shadow-[0_0_10px_rgba(0,0,0,0.1)]"
+        class="bg-secondary min-h-[800px] max-w-screen-md w-full border rounded my-12 p-4 shadow-[0_0_10px_rgba(0,0,0,0.1)]"
     >
         <div class="flex flex-col gap-2">
             <input
