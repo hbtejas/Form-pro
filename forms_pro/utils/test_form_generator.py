@@ -12,7 +12,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
         """Test FormGenerator initialization with existing DocType"""
         # Create a test DocType
         test_doctype = frappe.new_doc("DocType")
-        test_doctype.name = frappe.utils.random_string(8)
+        test_doctype.name = "Test DocType" + frappe.utils.random_string(8)
         test_doctype.module = "Forms Pro"
         test_doctype.custom = True
         test_doctype.insert(ignore_permissions=True)
