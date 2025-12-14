@@ -77,7 +77,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
         """Test that generate() uses existing DocType when provided"""
         # Create a test DocType
         test_doctype = frappe.new_doc("DocType")
-        test_doctype.name = frappe.utils.random_string(8)
+        test_doctype.name = "Test" + frappe.utils.random_string(8)
         test_doctype.module = "Forms Pro"
         test_doctype.custom = True
         test_doctype.insert(ignore_permissions=True)
@@ -130,7 +130,7 @@ class IntegrationTestFormGenerator(IntegrationTestCase):
         """Test complete flow when DocType is provided during initialization"""
         # Create a test DocType
         test_doctype = frappe.new_doc("DocType")
-        test_doctype.name = frappe.utils.random_string(8)
+        test_doctype.name = "Test" + frappe.utils.random_string(8)
         test_doctype.module = "Forms Pro"
         test_doctype.custom = True
         test_doctype.insert(ignore_permissions=True)
