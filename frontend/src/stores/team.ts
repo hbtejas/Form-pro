@@ -7,7 +7,7 @@ const user = useUser();
 
 export type TeamMember = {
   full_name: string;
-  user_image: string;
+  user_image: string | null;
   email: string;
 };
 

@@ -16,7 +16,7 @@ export type AccessPermissions = {
 
 export type SharedAccessUser = {
   full_name: string;
-  user_image: string;
+  user_image: string | null;
   email: string;
   read: boolean;
   write: boolean;
