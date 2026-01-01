@@ -33,14 +33,16 @@ const multiSelectOptions = computed(() => {
 
 const selectedUsers = ref<string[]>([]);
 
+const DEFAULT_ACCESS_PERMISSIONS = {
+    read: true,
+    write: true,
+    share: true,
+    submit: false,
+} as const;
+
 const giveAccessToUsers = () => {
     selectedUsers.value.forEach((user) => {
-        manageFormStore.addAccess(user, {
-            read: true,
-            write: true,
-            share: true,
-            submit: false,
-        });
+        manageFormStore.addAccess(user, DEFAULT_ACCESS_PERMISSIONS);
     });
     toast.success("Access given to users successfully");
     selectedUsers.value = [];
@@ -48,12 +50,7 @@ const giveAccessToUsers = () => {
 
 const giveAccessToAllTeamMembers = () => {
     teamMembersNotSharedWith.value.forEach((member: TeamMember) => {
-        manageFormStore.addAccess(member.email, {
-            read: true,
-            write: true,
-            share: true,
-            submit: false,
-        });
+        manageFormStore.addAccess(member.email, DEFAULT_ACCESS_PERMISSIONS);
     });
     toast.success("Access given to all team members successfully");
     selectedUsers.value = [];
