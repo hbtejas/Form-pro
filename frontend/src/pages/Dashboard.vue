@@ -36,7 +36,7 @@
                 <h2 class="text-3xl font-bold">Dashboard</h2>
                 <p class="text-base">Manage and create forms</p>
             </div>
-            <template v-if="user.user.has_desk_access">
+            <template v-if="user.user?.has_desk_access">
                 <Dropdown
                     class="w-fit"
                     :button="{
