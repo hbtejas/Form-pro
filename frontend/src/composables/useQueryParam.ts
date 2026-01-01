@@ -1,4 +1,4 @@
-import { ref, watch, type Ref } from "vue";
+import { ref, watch, nextTick, type Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 /**
@@ -51,9 +51,14 @@ export function useQueryParam<T extends string>(
   };
 
   const value = ref<T>(getInitialValue()) as Ref<T>;
+  let isInitializing = true;
 
   // Update URL when value changes
   watch(value, (newValue) => {
+    if (isInitializing) {
+      return;
+    }
+
     const currentParam = route.query[paramName];
 
     // Only update if the value actually changed
@@ -73,6 +78,10 @@ export function useQueryParam<T extends string>(
   watch(
     () => route.query[paramName],
     (newParam) => {
+      if (isInitializing) {
+        return;
+      }
+
       if (!newParam || typeof newParam !== "string") {
         // If param is removed, set to default
         if (value.value !== defaultValue) {
@@ -105,7 +114,17 @@ export function useQueryParam<T extends string>(
         ...route.query,
         [paramName]: value.value,
       },
-    });
+    })
+      .then(() => {
+        nextTick(() => {
+          isInitializing = false;
+        });
+      })
+      .catch(() => {
+        isInitializing = false;
+      });
+  } else {
+    isInitializing = false;
   }
 
   return value;
