@@ -3,8 +3,6 @@ import { useUser } from "./user";
 import { computed } from "vue";
 import { useCall } from "frappe-ui";
 
-const user = useUser();
-
 export type TeamMember = {
   full_name: string;
   user_image: string | null;
@@ -12,6 +10,7 @@ export type TeamMember = {
 };
 
 export const useTeam = defineStore("team", () => {
+  const user = useUser();
   const currentTeam = computed(() => user.currentTeam);
   const teamMembers = computed<TeamMember[]>(() => {
     const data = teamMembersResource.data;

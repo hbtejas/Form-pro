@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AccessSection from "@/components/form/manage/AccessSection.vue";
+import DescriptionSection from "@/components/form/manage/DescriptionSection.vue";
 import { useManageForm } from "@/stores/form/manageForm";
 import { FileText, CaseLower, Lock } from "lucide-vue-next";
 import { formatPrettyDate } from "@/utils/date";
