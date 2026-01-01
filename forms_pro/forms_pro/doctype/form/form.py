@@ -4,6 +4,7 @@
 from typing import Any
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.share import get_users
 
@@ -42,6 +43,8 @@ class Form(Document):
         """
         Get list of users with which this form is shared
         """
+        if not frappe.has_permission("Form", "read", self.name):
+            frappe.throw(_("You do not have read access to this form"))
         users_shared_with = get_users(self.doctype, self.name)
         return users_shared_with
 
