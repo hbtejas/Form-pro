@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Badge } from "frappe-ui";
 import { FileText } from "lucide-vue-next";
 import { computed } from "vue";

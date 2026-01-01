@@ -3,3 +3,12 @@ declare module "*.vue" {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
+
+export {};
+
+declare global {
+  interface Window {
+    site_name?: string;
+    csrf_token?: string;
+  }
+}

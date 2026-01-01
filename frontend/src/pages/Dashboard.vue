@@ -11,7 +11,7 @@
                     <label class="text-sm font-medium">DocType</label>
                     <Combobox
                         v-model="selectedDoctype"
-                        :options="doctypes.data"
+                        :options="doctypesList.data"
                         label="DocType"
                         id="doctype"
                     />
@@ -24,7 +24,7 @@
                     :disabled="!selectedDoctype"
                     @click="
                         () => {
-                            handleCreateDraftFormWithDoctype(selectedDoctype.value);
+                            handleCreateDraftFormWithDoctype();
                         }
                     "
                     >Create</Button
@@ -36,7 +36,7 @@
                 <h2 class="text-3xl font-bold">Dashboard</h2>
                 <p class="text-base">Manage and create forms</p>
             </div>
-            <template v-if="user.has_desk_access">
+            <template v-if="user.user.has_desk_access">
                 <Dropdown
                     class="w-fit"
                     :button="{
@@ -84,30 +84,31 @@
     </BaseLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import { useRouter } from "vue-router";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
+import { toast } from "vue-sonner";
 import { useUser } from "@/stores/user";
-import {
-    Dropdown,
-    Dialog,
-    FormControl,
-    createListResource,
-    Card,
-    createResource,
-    Combobox,
-} from "frappe-ui";
-import { session } from "@/data/session";
+import { Dropdown, Dialog, createResource, Combobox } from "frappe-ui";
 import { createNewFormWithDoctype, createNewForm } from "@/utils/form_generator";
 import FormPreviewCard from "@/components/dashboard/FormPreviewCard.vue";
 const router = useRouter();
 const showSelectDoctypeDialog = ref(false);
+const selectedDoctype = ref<string | null>(null);
 
 const user = useUser();
 
+const doctypesList = createResource({
+    url: "forms_pro.api.form.get_doctype_list",
+});
+
 const handleCreateDraftFormWithDoctype = async () => {
-    const data = await createNewFormWithDoctype(selectedDoctype.value, user.currentTeam?.name);
+    if (!selectedDoctype.value || !user.currentTeam?.name) {
+        toast.error("Error occured while creating form. Check DocType Selected.");
+        return;
+    }
+    const data = await createNewFormWithDoctype(selectedDoctype.value, user.currentTeam.name);
     router.push({
         name: "Edit Form",
         params: {
@@ -117,7 +118,11 @@ const handleCreateDraftFormWithDoctype = async () => {
 };
 
 const handleCreateDraftForm = async () => {
-    const data = await createNewForm(user.currentTeam?.name);
+    if (!user.currentTeam?.name) {
+        toast.error("Error occured while creating form. User has no default team.");
+        return;
+    }
+    const data = await createNewForm(user.currentTeam.name);
     router.push({
         name: "Edit Form",
         params: {
@@ -146,4 +151,10 @@ watch(
     },
     { immediate: true }
 );
+
+onMounted(() => {
+    if (user.user.has_desk_access) {
+        doctypesList.fetch();
+    }
+});
 </script>

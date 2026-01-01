@@ -22,7 +22,7 @@ import {
 
 import "./index.css";
 
-const globalComponents = {
+const globalComponents: Record<string, any> = {
   Button,
   TextInput,
   Input,

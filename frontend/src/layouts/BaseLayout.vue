@@ -19,23 +19,24 @@
         <slot></slot>
     </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { session } from "@/data/session";
-import { ref, computed } from "vue";
-import { Sidebar } from "frappe-ui";
-import { LayoutDashboard, ArrowLeftRight, LogOut } from "lucide-vue-next";
-import { useUser } from "@/stores/user";
+import { computed } from "vue";
+import { Sidebar, type SidebarProps } from "frappe-ui";
+import { LayoutDashboard, LogOut } from "lucide-vue-next";
+import type { PropType } from "vue";
 
-const userStore = useUser();
+type SidebarSectionProps = NonNullable<SidebarProps["sections"]> extends (infer T)[] ? T : never;
+type SidebarHeaderProps = NonNullable<SidebarProps["header"]>;
 
 const props = defineProps({
     sidebarHeader: {
-        type: Object,
+        type: Object as PropType<SidebarHeaderProps | null>,
         default: null,
     },
     sidebarSections: {
-        type: Array,
-        default: [],
+        type: Array as PropType<SidebarSectionProps[]>,
+        default: () => [],
     },
 });
 
@@ -54,17 +55,17 @@ const sidebarHeader = computed(() => {
 
     return {
         title: "Forms Pro",
-        subtitle: session.full_name,
+        subtitle: session.full_name ?? undefined,
         menuItems: defaultSidebarMenuItems.value,
     };
 });
 
-const sidebarSections = computed(() => {
+const sidebarSections = computed((): SidebarSectionProps[] => {
     if (props.sidebarSections && props.sidebarSections.length > 0) {
         return props.sidebarSections;
     }
 
-    const _sections = [
+    const _sections: SidebarSectionProps[] = [
         {
             label: "",
             items: [
