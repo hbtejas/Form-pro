@@ -61,6 +61,8 @@ def get_form_shared_with(form_id: str) -> list[frappe.Any]:
 
     for user in shared_with:
         _user = get_user(user["user"])
+        if _user is None:
+            continue
         user.update(_user)
         shared_with_responses.append(FormSharedWithResponse.model_validate(user).model_dump())
 
