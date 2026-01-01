@@ -1491,6 +1491,11 @@ dayjs@^1.11.13:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.18.tgz#835fa712aac52ab9dec8b1494098774ed7070a11"
   integrity sha512-zFBQ7WFRvVRhKcWoUh+ZA1g2HVgUbsZm9sbddh8EC5iv93sui8DVVz1Npvz+r6meo9VKfa8NyLWBsQK1VvIKPA==
 
+dayjs@^1.11.19:
+  version "1.11.19"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.19.tgz#15dc98e854bb43917f12021806af897c58ae2938"
+  integrity sha512-t5EcLVS6QPBNqM2z8fakk/NKel+Xzshgt8FFKAn+qwlD1pzZWxh0nVCrvFK7ZDb6XucZeF9z8C7CBWTRIVApAw==
+
 debug@4, debug@^4.1.1, debug@^4.3.4, debug@^4.3.7, debug@^4.4.0, debug@^4.4.1:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.4.1.tgz#e5a8bc6cbc4c6cd3e64308b0693a3d4fa550189b"
@@ -1789,10 +1794,10 @@ fraction.js@^4.3.7:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frappe-ui@^0.1.214:
-  version "0.1.214"
-  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.214.tgz#844207c000b695cf6c38d0be5058c03a13e42fca"
-  integrity sha512-1siy9m992OiPqxxjeZ+SapMD4GciD3n45Yuuuua2b+2QgfSD4R9qNTYAU/j4Jj5M/AfMWlx/shuJ6Wq/f6Q8aA==
+frappe-ui@^0.1.244:
+  version "0.1.244"
+  resolved "https://registry.yarnpkg.com/frappe-ui/-/frappe-ui-0.1.244.tgz#9fdb37a7db08e1e5d8b7033ea77b0977f185b8e9"
+  integrity sha512-ZO3BDmA5zp655D11Nhw5ZD1f0vppSPAgXW3VxsxnfF0iFymkn2sAZadD+oObJzN2iIpRJ4SHro5UEG40koesOg==
   dependencies:
     "@floating-ui/vue" "^1.1.6"
     "@headlessui/vue" "^1.7.14"
