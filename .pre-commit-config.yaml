@@ -34,6 +34,7 @@ repos:
         # Ignore any files that might contain jinja / bundles
         exclude: |
           (?x)^(
+              forms_pro/frontend/components.d.ts|
               forms_pro/public/dist/.*|
               .*node_modules.*|
               .*boilerplate.*|
@@ -50,6 +51,7 @@ repos:
         # Ignore any files that might contain jinja / bundles
         exclude: |
           (?x)^(
+              forms_pro/frontend/components.d.ts
               forms_pro/public/dist/.*|
               cypress/.*|
               .*node_modules.*|
