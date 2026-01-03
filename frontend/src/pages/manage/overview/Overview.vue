@@ -4,7 +4,7 @@ import DescriptionSection from "@/components/form/manage/DescriptionSection.vue"
 import { useManageForm } from "@/stores/form/manageForm";
 import { FileText, CaseLower, Lock } from "lucide-vue-next";
 import { formatPrettyDate } from "@/utils/date";
-import { TabButtons, LoadingText } from "frappe-ui";
+import { TabButtons, LoadingText, Badge } from "frappe-ui";
 import Avatar from "@/components/ui/Avatar.vue";
 import { useQueryParam } from "@/composables/useQueryParam";
 
@@ -35,6 +35,14 @@ const selectedTab = useQueryParam<TabValue>("tab", "description", validTabValues
     </div>
     <div v-if="manageFormStore.formResource.isFinished">
         <div class="flex flex-col gap-3">
+            <Badge
+                v-if="manageFormStore.formData?.is_published"
+                class="w-fit"
+                label="Published"
+                variant="solid"
+                size="md"
+            />
+
             <div class="flex gap-3 justify-between items-center">
                 <div class="flex gap-3 items-center text-ink-gray-8">
                     <FileText class="w-6 h-6" />
