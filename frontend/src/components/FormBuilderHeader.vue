@@ -44,10 +44,17 @@ const openFormSubmissionPage = () => {
             <template #body-main>
                 <div class="flex flex-col gap-2 bg-white rounded-lg p-2">
                     <Button
-                        label="Go to dashboard"
+                        label="Go Back"
                         icon-left="arrow-left"
                         variant="ghost"
-                        route="/"
+                        @click="
+                            router.replace({
+                                name: 'Manage Form',
+                                params: {
+                                    id: editFormStore.originalFormData?.name,
+                                },
+                            })
+                        "
                     />
                 </div>
             </template>
