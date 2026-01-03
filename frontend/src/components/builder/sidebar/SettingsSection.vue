@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Checkbox, FormControl, Tooltip } from "frappe-ui";
 import { useEditForm } from "@/stores/editForm";
 import { validateFormRoute } from "@/utils/form_generator";

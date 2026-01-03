@@ -1,16 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { useEditForm } from "@/stores/editForm";
-import { formFields } from "@/utils/form_fields";
+import { formFields, FormFields } from "@/utils/form_fields";
 import { ref, computed } from "vue";
+import type { Component } from "vue";
+import type { FormField } from "@/types/formfield";
 
-const componentMap = formFields.reduce((acc, field) => {
+const componentMap = formFields.reduce((acc: Record<string, Component>, field: FormFields) => {
     acc[field.name] = field.component;
     return acc;
 }, {});
 
 const search = ref("");
 const filteredFields = computed(() => {
-    return editFormStore.doctypeFields.filter((field) => {
+    return editFormStore.doctypeFields.filter((field: FormField) => {
         return field.label.toLowerCase().includes(search.value.toLowerCase());
     });
 });

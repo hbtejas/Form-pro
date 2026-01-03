@@ -1,12 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
-import { formFields } from "@/utils/form_fields";
+import { formFields, FormFields } from "@/utils/form_fields";
 import { FormControl, Button } from "frappe-ui";
 import { useEditForm } from "@/stores/editForm";
 import RenderField from "@/components/RenderField.vue";
+import type { Component } from "vue";
 
 const search = ref("");
-const componentMap = formFields.reduce((acc, field) => {
+const componentMap = formFields.reduce((acc: Record<string, Component>, field: FormFields) => {
     acc[field.name] = field.component;
     return acc;
 }, {});
