@@ -57,7 +57,7 @@ function setPermission(row: any, column: any, value: boolean) {
         v-model="openRemoveAccessModal"
         v-model:selected-user-to-remove="selectedUserToRemove"
     />
-    <div class="flex flex-col gap-4">
+    <div v-if="manageFormStore.formAccessResource.data" class="flex flex-col gap-4">
         <div class="space-y-1">
             <p class="text-base font-medium text-ink-gray-8">Manage access to this form</p>
             <p class="text-sm text-ink-gray-5">
