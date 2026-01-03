@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import FormBuilderHeader from "@/components/FormBuilderHeader.vue";
 import FormBuilderSidebar from "@/components/FormBuilderSidebar.vue";
 import FormBuilderContent from "@/components/FormBuilderContent.vue";

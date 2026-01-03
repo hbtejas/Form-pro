@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Settings, Plus, StretchHorizontal } from "lucide-vue-next";
 import { ref } from "vue";
 import { Tooltip } from "frappe-ui";
