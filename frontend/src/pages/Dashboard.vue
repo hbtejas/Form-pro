@@ -149,12 +149,16 @@ watch(
             teamForms.fetch();
         }
     },
-    { immediate: true }
+    { immediate: true },
 );
 
-onMounted(() => {
-    if (user.user.has_desk_access) {
-        doctypesList.fetch();
-    }
-});
+watch(
+    user.user,
+    (user) => {
+        if (user?.has_desk_access) {
+            doctypesList.fetch();
+        }
+    },
+    { immediate: true },
+);
 </script>
