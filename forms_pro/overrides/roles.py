@@ -5,6 +5,14 @@ from forms_pro.roles import FORMS_PRO_ROLE
 from forms_pro.utils.teams import get_user_teams, set_current_team
 
 
+def has_forms_pro_permission() -> bool:
+    if frappe.session.user == "Administrator":
+        return True
+
+    user_roles = frappe.get_roles(frappe.session.user)
+    return FORMS_PRO_ROLE in user_roles
+
+
 def handle_forms_pro_role_change(doc, method) -> None:
     user: User = frappe.get_doc("User", doc.name)
     user.on_update()

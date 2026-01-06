@@ -15,15 +15,15 @@ fixtures = [
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "forms_pro",
-# 		"logo": "/assets/forms_pro/logo.png",
-# 		"title": "Forms Pro",
-# 		"route": "/forms_pro",
-# 		"has_permission": "forms_pro.api.permission.has_app_permission"
-# 	}
-# ]
+add_to_apps_screen = [
+    {
+        "name": "forms_pro",
+        "logo": "/assets/forms_pro/images/logo_300.png",
+        "title": "Forms Pro",
+        "route": "/forms_pro",
+        "has_permission": "forms_pro.overrides.roles.has_forms_pro_permission",
+    }
+]
 
 # Includes in <head>
 # ------------------
