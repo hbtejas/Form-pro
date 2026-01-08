@@ -64,7 +64,7 @@ def submit_form_response(
 
         submission.fp_linked_form = form_id
         submission.fp_submission_status = submission_status.value
-        submission.insert(ignore_permissions=True)
+        submission.insert(ignore_permissions=True, ignore_mandatory=True)
 
         # Share the submission with the owner
         add_docshare(
