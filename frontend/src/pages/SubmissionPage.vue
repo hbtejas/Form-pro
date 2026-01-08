@@ -5,27 +5,32 @@ import FormHeader from "@/components/submission/FormHeader.vue";
 import FormRenderer from "@/components/submission/FormRenderer.vue";
 import Logo from "@/assets/Logo.vue";
 import PageHeader from "@/components/submission/PageHeader.vue";
+import PreviousSubmissionSection from "@/components/submission/PreviousSubmissionSection.vue";
 
 const route = useRoute();
 const submissionFormStore = useSubmissionForm();
 submissionFormStore.initialize(route.params.route as string);
 </script>
 <template>
-    <div class="p-8">
+    <div class="p-8 bg-surface-gray-1 min-h-svh space-y-16">
         <PageHeader />
-
-        <div
-            class="space-y-4 shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-secondary border rounded-lg p-6 max-w-screen-md mx-auto mt-16"
-        >
-            <div class="space-y-4" v-if="submissionFormStore.inFormSubmission">
+        <PreviousSubmissionSection v-if="submissionFormStore.userSubmissions" />
+        <FormUnpublishedState
+            v-if="!submissionFormStore.formIsPublished"
+            class="form-container-simple"
+        />
+        <div v-else class="form-container-simple">
+            <div class="space-y-4" v-if="submissionFormStore.inFormFillingState">
                 <FormHeader />
-                <FormRenderer />
+                <FormRenderer :disabled="false" />
             </div>
-            <SuccessSection v-if="submissionFormStore.successSubmission" />
+            <SuccessSection v-if="submissionFormStore.inSuccessState" />
         </div>
 
-        <div class="z-10 absolute bottom-0 right-0 p-8">
-            <div class="flex flex-col items-end text-ink-gray-8">
+        <div class="z-10 fixed bottom-0 right-0 p-8">
+            <div
+                class="flex flex-col items-end text-ink-gray-2 md:text-ink-gray-4 hover:text-ink-gray-8 transition-colors duration-300 mt-4"
+            >
                 <span class="text-xs">Built on</span>
                 <a
                     href="https://github.com/buildwithhussain/forms_pro"

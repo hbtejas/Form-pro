@@ -4,20 +4,68 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { FormField } from "@/types/formfield";
 import { useStorage } from "@vueuse/core";
+import { session } from "@/data/session";
+
+export type UserSubmission = {
+  name: string;
+  creation: string;
+  modified: string;
+};
+
+export enum SubmissionStatus {
+  DRAFT = "Draft",
+  SUBMITTED = "Submitted",
+}
 
 export const useSubmissionForm = defineStore("submissionForm", () => {
   const formResource = ref<any>(null);
-  const currentFormId = ref<string | null>(null);
+  const currentFormRoute = ref<string | null>(null);
   const isLoading = computed(() => formResource.value?.loading);
   const allowIncompleteForms = computed(
     () => formResource.value?.data?.allow_incomplete
   );
 
+  const currentFormId = computed((): string | null => {
+    if (!formResource.value || !formResource.value.data) {
+      return null;
+    }
+
+    return formResource.value.data.name;
+  });
+
+  const formIsPublished = computed((): boolean | null => {
+    if (!formResource.value || !formResource.value.data) {
+      return null;
+    }
+
+    return formResource.value.data.is_published;
+  });
+
   const errors = ref<string[]>([]);
-  const successSubmission = ref<number>(0);
-  const inFormSubmission = ref<number>(1);
+  const inSuccessState = ref<boolean>(false);
+  const inFormFillingState = ref<boolean>(true);
 
   const fields = ref<Record<string, any>>({});
+
+  const userSubmissionsResource = createResource({
+    url: "forms_pro.api.submission.get_user_submissions",
+    makeParams() {
+      return {
+        form_id: currentFormId.value,
+      };
+    },
+    auto: false,
+  });
+
+  const userSubmissions = computed((): UserSubmission[] | null => {
+    if (
+      userSubmissionsResource.data &&
+      userSubmissionsResource.data.length > 0
+    ) {
+      return userSubmissionsResource.data;
+    }
+    return null;
+  });
 
   function initializeFields() {
     if (!formResource.value?.data) return;
@@ -34,7 +82,7 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
   }
 
   async function initialize(route: string) {
-    currentFormId.value = route;
+    currentFormRoute.value = route;
     formResource.value = createResource({
       url: "forms_pro.api.form.get_form_by_route",
       params: {
@@ -53,27 +101,22 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
           fields.value = { ...fields.value, ...draftData.value };
         }
 
-        inFormSubmission.value = 1;
+        inFormFillingState.value = true;
       },
     });
+
     await formResource.value.fetch();
+    if (session.isLoggedIn) {
+      await userSubmissionsResource.fetch();
+    }
   }
 
   function saveAsDraft() {
-    errors.value = [];
-
-    if (!formResource.value?.data?.name) {
-      toast.error("Form not loaded");
-      return;
-    }
-
-    const draftKey = `draft_submission_data_${formResource.value.data.name}`;
-    const draftData = useStorage(draftKey, {}, localStorage);
-    draftData.value = fields.value;
-    toast.success("Draft saved successfully");
+    toast.info("Saving draft...");
+    submitForm(true);
   }
 
-  async function submitForm() {
+  async function submitForm(isDraft: boolean = false) {
     validateValues();
     if (errors.value.length > 0) {
       return;
@@ -88,12 +131,30 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
             fieldname: fieldname,
             value: value,
           })),
+          submission_status: isDraft
+            ? SubmissionStatus.DRAFT
+            : SubmissionStatus.SUBMITTED,
         };
       },
       onSuccess() {
         clearDraft();
-        inFormSubmission.value = 0;
-        successSubmission.value = 1;
+        if (isDraft) {
+          toast.info("Draft saved successfully");
+          inFormFillingState.value = true;
+          userSubmissionsResource.fetch();
+        } else {
+          inFormFillingState.value = false;
+          inSuccessState.value = true;
+        }
+      },
+      onError(error: any) {
+        toast.error("Failed to submit form");
+        errors.value = error.messages?.map((message: string) => message) || [];
+        if (errors.value.length === 0) {
+          errors.value.push(
+            "Error while submitting form. Check the values and try again."
+          );
+        }
       },
     });
 
@@ -118,12 +179,17 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
   return {
     formResource,
     currentFormId,
+    currentFormRoute,
+    validateValues,
     fields,
     isLoading,
     allowIncompleteForms,
     errors,
-    successSubmission,
-    inFormSubmission,
+    inSuccessState,
+    inFormFillingState,
+    userSubmissionsResource,
+    userSubmissions,
+    formIsPublished,
     initialize,
     submitForm,
     saveAsDraft,
