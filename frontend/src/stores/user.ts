@@ -24,7 +24,8 @@ export const useUser = defineStore("user", () => {
   });
 
   async function initialize() {
-    await Promise.all([userResource.fetch(), userTeamsResource.fetch()]);
+    await userResource.fetch();
+    await userTeamsResource.fetch();
     const _currTeam = getCurrentTeamFromAllTeams();
     if (_currTeam) {
       setCurrentTeam(_currTeam);

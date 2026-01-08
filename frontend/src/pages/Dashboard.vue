@@ -155,7 +155,7 @@ watch(
 watch(
     user.user,
     (user) => {
-        if (user?.has_desk_access) {
+        if (user && user.has_desk_access) {
             doctypesList.fetch();
         }
     },
