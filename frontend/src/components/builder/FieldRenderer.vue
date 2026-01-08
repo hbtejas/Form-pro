@@ -46,6 +46,18 @@ const getClasses = computed(() => {
             return "w-full flex flex-col gap-2";
     }
 });
+
+const getOptions = () => {
+    if (!fieldData.value.options) {
+        return "";
+    }
+
+    if (fieldData.value.fieldtype === "Select") {
+        return fieldData.value.options.split("\n");
+    }
+
+    return fieldData.value.options;
+};
 </script>
 <template>
     <div :class="getClasses" v-if="fieldData.fieldtype == 'Switch'">
@@ -139,6 +151,7 @@ const getClasses = computed(() => {
             :field="fieldData"
             :class="{ 'pointer-events-none': inEditMode }"
             :disabled="disabled"
+            :options="getOptions()"
         />
         <small class="text-gray-500">
             {{ fieldData.description }}
