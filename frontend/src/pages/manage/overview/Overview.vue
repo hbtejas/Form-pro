@@ -30,10 +30,10 @@ const selectedTab = useQueryParam<TabValue>("tab", "description", validTabValues
 </script>
 
 <template>
-    <div v-if="manageFormStore.formResource.loading">
+    <div v-if="manageFormStore.formResource.value?.loading">
         <LoadingText />
     </div>
-    <div v-if="manageFormStore.formResource.isFinished">
+    <div v-if="manageFormStore.formData">
         <div class="flex flex-col gap-3">
             <Badge
                 v-if="manageFormStore.formData?.is_published"
