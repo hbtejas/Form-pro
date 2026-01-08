@@ -11,7 +11,7 @@
                     <label class="text-sm font-medium">DocType</label>
                     <Combobox
                         v-model="selectedDoctype"
-                        :options="doctypesList.data"
+                        :options="doctypesOptions"
                         label="DocType"
                         id="doctype"
                     />
@@ -87,7 +87,7 @@
 <script setup lang="ts">
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import { useRouter } from "vue-router";
-import { onMounted, ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { toast } from "vue-sonner";
 import { useUser } from "@/stores/user";
 import { Dropdown, Dialog, createResource, Combobox } from "frappe-ui";
@@ -102,6 +102,9 @@ const user = useUser();
 const doctypesList = createResource({
     url: "forms_pro.api.form.get_doctype_list",
 });
+
+// Ensure doctypesList.data is always an array to prevent Combobox errors
+const doctypesOptions = computed(() => doctypesList.data || []);
 
 const handleCreateDraftFormWithDoctype = async () => {
     if (!selectedDoctype.value || !user.currentTeam?.name) {
@@ -153,7 +156,7 @@ watch(
 );
 
 watch(
-    user.user,
+    () => user.user,
     (user) => {
         if (user && user.has_desk_access) {
             doctypesList.fetch();
