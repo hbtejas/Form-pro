@@ -56,5 +56,6 @@ jspm_packages/
 
 /forms_pro/public/frontend
 /forms_pro/www/forms.html
+/forms_pro/www/frontend.html
 /forms_pro/public/node_modules
 frontend/components.d.ts
