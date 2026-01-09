@@ -18,6 +18,9 @@ const getFieldTypeOptions = () => {
         "Switch",
         "Textarea",
         "Text Editor",
+        "Attach",
+        "Link",
+        "Checkbox",
     ];
 };
 
@@ -37,10 +40,10 @@ const getFieldProperties = () => {
             required: true,
             options: getFieldTypeOptions(),
         },
-        { label: "Description", type: "textarea", field: "description" },
-        { label: "Mandatory", type: "checkbox", field: "reqd" },
-        { label: "Options", type: "textarea", field: "options" },
-        { label: "Default", type: "textarea", field: "default" },
+        { label: "Description", type: "textarea", field: "description", required: false },
+        { label: "Mandatory", type: "checkbox", field: "reqd", required: false },
+        { label: "Options", type: "textarea", field: "options", required: false },
+        { label: "Default", type: "textarea", field: "default", required: false },
     ];
 };
 </script>
