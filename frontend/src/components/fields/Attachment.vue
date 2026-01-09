@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ErrorMessage, FileUploader, FormControl } from "frappe-ui";
-import { computed, ref } from "vue";
-import { FileImage, FileText } from "lucide-vue-next";
+import { ErrorMessage, FileUploader } from "frappe-ui";
+import { ref } from "vue";
 
 const props = defineProps({
     field: {
@@ -67,8 +66,6 @@ const handleRemove = () => {
         <FileUploader
             v-if="!inPreview"
             v-bind="props.field"
-            :class="{ 'pointer-events-none': props.field.inEditMode }"
-            :disabled="props.field.disabled"
             @success="(file: FileType) => handleChange(file)"
         >
             <template #default="{ uploading, progress, error, openFileSelector }">

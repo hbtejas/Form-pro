@@ -3,9 +3,6 @@ import { computed, ref, watch, onMounted } from "vue";
 import { Asterisk } from "lucide-vue-next";
 import RenderField from "../RenderField.vue";
 import { createResource } from "frappe-ui";
-import { useSubmissionForm } from "@/stores/submissionForm";
-
-const submissionFormStore = useSubmissionForm();
 
 const props = defineProps({
     field: {

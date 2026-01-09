@@ -158,8 +158,8 @@ export const formFields: FormFields[] = [
 export const mapDoctypeFieldForForm = (fieldtype: string): string => {
   const FIELD_TYPE_MAP = {
     Autocomplete: "Data",
-    Attach: "File Uploader",
-    "Attach Image": "File Uploader",
+    Attach: "Attach",
+    "Attach Image": "Attach",
     Barcode: "Barcode",
     Button: "Button",
     Check: "Checkbox",
