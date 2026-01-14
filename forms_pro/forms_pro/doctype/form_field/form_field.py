@@ -14,6 +14,7 @@ class FormField(Document):
     if TYPE_CHECKING:
         from frappe.types import DF
 
+        conditional_logic: DF.Code | None
         default: DF.SmallText | None
         description: DF.SmallText | None
         fieldname: DF.Data
@@ -32,6 +33,8 @@ class FormField(Document):
             "Textarea",
             "Text Editor",
             "Link",
+            "Checkbox",
+            "Rating",
         ]
         label: DF.Data
         options: DF.SmallText | None
@@ -56,7 +59,7 @@ class FormField(Document):
             _fieldtype = "Data"
         elif self.fieldtype == "Time Picker":
             _fieldtype = "Time"
-        elif self.fieldtype == "Switch":
+        elif self.fieldtype == "Switch" or self.fieldtype == "Checkbox":
             _fieldtype = "Check"
         elif self.fieldtype == "Textarea":
             _fieldtype = "Text"
