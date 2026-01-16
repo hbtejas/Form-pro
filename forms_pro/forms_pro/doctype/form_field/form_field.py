@@ -35,6 +35,7 @@ class FormField(Document):
             "Link",
             "Checkbox",
             "Rating",
+            "Phone",
         ]
         hidden: DF.Check
         label: DF.Data
