@@ -1,12 +1,13 @@
 # Copyright (c) 2025, harsh@buildwithhussain.com and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
-from frappe.utils import cached_property
+from frappe.share import add_docshare
 from pydantic import BaseModel, EmailStr
 
 from forms_pro.api.user import get_user
+from forms_pro.utils.teams import set_current_team
 
 
 class GetTeamMembersResponse(BaseModel):
@@ -30,7 +31,7 @@ class FPTeam(Document):
         users: DF.TableMultiSelect[FPTeamMember]
     # end: auto-generated types
 
-    @cached_property
+    @property
     def team_members(self) -> list[GetTeamMembersResponse]:
         """
         Get the list of team members
@@ -60,4 +61,36 @@ class FPTeam(Document):
         Returns:
             bool - True if the user is a member of the team, False otherwise
         """
-        return user in self.team_members
+        return user in [member["email"] for member in self.team_members]
+
+    def after_insert(self) -> None:
+        self.add_to_team(self.owner)
+        set_current_team(self.name, self.owner)
+        self.save()
+
+    def add_to_team(self, user: str) -> None:
+        """
+        Add a user to the team
+
+        Args:
+            user: The user email address
+        """
+        if user == "Administrator":
+            return
+
+        if self.is_team_member(user):
+            frappe.throw(
+                frappe._("User is already a member of the team"),
+                frappe.DuplicateEntryError,
+            )
+
+        self.append("users", {"user": user})
+        add_docshare(
+            self.doctype,
+            self.name,
+            user,
+            read=1,
+            write=1,
+            share=1,
+            flags={"ignore_share_permission": True},
+        )
