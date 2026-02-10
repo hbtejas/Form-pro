@@ -1,0 +1,41 @@
+name: Frontend TypeScript
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - "frontend/**"
+      - ".github/workflows/typecheck.yml"
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/typecheck.yml"
+
+concurrency:
+  group: typecheck-forms_pro-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    name: TypeScript
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn install --frozen-lockfile
+
+      - name: Type check
+        working-directory: frontend
+        run: yarn typecheck
