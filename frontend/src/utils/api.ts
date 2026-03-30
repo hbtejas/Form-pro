@@ -17,7 +17,8 @@ export const updateForm = (id: string, data: any) =>
   api.put(`/forms/${id}`, data).then((res: any) => res.data);
 
 export const submitForm = (id: string, submissionData: any) => 
-  api.post(`/forms/${id}/submit`, { data: submissionData }).then((res: any) => res.data);
+  api.post(`/forms/${id}/submissions`, { values: submissionData }).then((res: any) => res.data);
+
 
 export const validateRoute = (route: string, excludeId?: string) => 
   api.get(`/forms/validate-route/${route}`, { params: { exclude_id: excludeId } }).then((res: any) => res.data);
