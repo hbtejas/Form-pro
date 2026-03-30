@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import { createDocumentResource, createResource } from "frappe-ui";
+import { ref, computed, reactive } from "vue";
+import api from "@/utils/api";
 import { mapDoctypeFieldForForm } from "@/utils/form_fields";
 import { FormField, FormFieldTypes } from "@/types/formfield";
 import { Form } from "@/types/form";
@@ -9,152 +9,103 @@ import { toast } from "vue-sonner";
 function scrubFieldname(label: string) {
   return label
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_") // replace non-alphanumeric with underscores
-    .replace(/^_+|_+$/g, "") // trim leading/trailing underscores
-    .replace(/_{2,}/g, "_"); // collapse multiple underscores
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .replace(/_{2,}/g, "_");
 }
 
 export const useEditForm = defineStore("editForm", () => {
-  const formResource = ref<any>(null);
   const currentFormId = ref<string | null>(null);
+  const formData = ref<any>(null);
   const selectedField = ref<FormField | null>(null);
-  const isUnsaved = computed(() => formResource.value?.isDirty || false);
-  const isLoading = computed(() => formResource.value?.loading || false);
-  const isPublished = computed(
-    () => formResource.value?.doc?.is_published || false
-  );
-
+  const isLoading = ref(false);
+  const isUnsaved = ref(false);
   const doctypeFields = ref<any>([]);
 
-  const isError = computed(() => formResource.value?.error || false);
-  const formData = computed(() => formResource.value?.doc || null);
-  const fields = computed(() => {
-    return formResource.value?.doc?.fields || [];
-  });
-  const originalFormData = computed(
-    () => formResource.value?.originalDoc || null
-  );
+  const isPublished = computed(() => formData.value?.is_published || false);
+  const fields = computed(() => formData.value?.fields || []);
 
   async function getDoctypeFields() {
-    if (formResource.value?.doc?.linked_doctype) {
-      const _fields = createResource({
-        url: "forms_pro.api.form.get_doctype_fields",
-        method: "GET",
-        makeParams() {
-          return {
-            doctype: formResource.value?.doc?.linked_doctype,
-          };
-        },
-        transform: (data: any) => {
-          return data.map((field: any) => {
-            return {
-              ...field,
-              fieldtype: mapDoctypeFieldForForm(field.fieldtype),
-            };
-          });
-        },
-      });
-
-      await _fields.fetch();
-      doctypeFields.value = _fields.data;
+    if (formData.value?.linked_doctype) {
+      try {
+        const resp = await api.get("/doctypes/fields", { params: { doctype: formData.value.linked_doctype } });
+        doctypeFields.value = resp.data.map((field: any) => ({
+          ...field,
+          fieldtype: mapDoctypeFieldForForm(field.fieldtype),
+        }));
+      } catch (err) {
+        doctypeFields.value = [];
+      }
     }
   }
 
-  function initialize(formId: string) {
+  async function initialize(formId: string) {
     if (formId !== currentFormId.value) {
       currentFormId.value = formId;
-      formResource.value = createDocumentResource({
-        doctype: "Form",
-        name: formId,
-        transform: (doc: Form) => {
-          return {
-            ...doc,
-            title: doc.title === "Untitled Form" ? "" : doc.title,
-          };
-        },
-        onSuccess: () => {
-          getDoctypeFields();
-        },
-      });
+      isLoading.value = true;
+      try {
+        const resp = await api.get(`/forms/${formId}`);
+        formData.value = {
+          ...resp.data,
+          title: resp.data.title === "Untitled Form" ? "" : resp.data.title,
+        };
+        await getDoctypeFields();
+      } catch (err) {
+        toast.error("Failed to load form");
+      } finally {
+        isLoading.value = false;
+      }
     }
   }
 
-  function reload() {
-    if (formResource.value) {
-      formResource.value.reload();
+  async function reload() {
+    if (currentFormId.value) {
+      await initialize(currentFormId.value);
     }
   }
 
   function reset() {
     currentFormId.value = null;
-    formResource.value = null;
+    formData.value = null;
   }
 
-  function save() {
-    if (formResource.value) {
-      formResource.value.doc.fields.forEach(
-        (field: FormField, index: number) => {
-          field.idx = index + 1;
-          if (!field.fieldname || field.fieldname.trim() === "") {
-            field.fieldname = scrubFieldname(field.label);
-          }
+  async function save() {
+    if (formData.value) {
+      formData.value.fields.forEach((field: FormField, index: number) => {
+        field.idx = index + 1;
+        if (!field.fieldname || field.fieldname.trim() === "") {
+          field.fieldname = scrubFieldname(field.label);
         }
-      );
-
-      return formResource.value.setValue.submit(formResource.value.doc, {
-        onSuccess: () => {
-          toast.success("Form Updated Successfully");
-        },
-        onError: (error: any) => {
-          toast.error("Failed to Update Form", {
-            description: error.message,
-          });
-        },
       });
-    }
-    toast.error("No form resource available");
-    return Promise.reject(new Error("No form resource available"));
-  }
 
-  function saveAndPublish() {
-    if (formResource.value) {
-      formResource.value.doc.is_published = 1;
-      save();
-    }
-  }
-
-  function togglePublish() {
-    if (formResource.value?.doc) {
-      formResource.value.setValue.submit(
-        {
-          is_published: !formResource.value.doc.is_published,
-        },
-        {
-          onSuccess: () => {
-            if (formResource.value.doc.is_published) {
-              toast.success("Form published successfully");
-            } else {
-              toast.info("Form unpublished successfully");
-            }
-          },
-          onError: () => {
-            toast.error("Failed to publish form");
-          },
-        }
-      );
+      try {
+        const resp = await api.patch(`/forms/${currentFormId.value}`, formData.value);
+        formData.value = resp.data;
+        isUnsaved.value = false;
+        toast.success("Form Updated Successfully");
+      } catch (err: any) {
+        toast.error("Failed to Update Form", { description: err.message });
+      }
     }
   }
 
-  function updateFormData(data: Partial<Form>) {
-    if (formResource.value?.doc) {
-      Object.assign(formResource.value.doc, data);
+  async function togglePublish() {
+    if (formData.value) {
+      try {
+        const newStatus = !formData.value.is_published;
+        const resp = await api.patch(`/forms/${currentFormId.value}`, { is_published: newStatus });
+        formData.value = resp.data;
+        toast.success(newStatus ? "Form published successfully" : "Form unpublished successfully");
+      } catch (err) {
+        toast.error("Failed to update publish status");
+      }
     }
   }
 
   function addField(fieldtype: string) {
-    if (formResource.value?.doc) {
+    if (formData.value) {
       const newField: FormField = {
-        idx: formResource.value.doc.fields.length + 1,
+        idx: formData.value.fields.length + 1,
         fieldtype: fieldtype as FormFieldTypes,
         label: "",
         fieldname: "",
@@ -162,30 +113,31 @@ export const useEditForm = defineStore("editForm", () => {
         default: "",
         description: "",
       };
-
-      formResource.value.doc.fields.push(newField);
+      formData.value.fields.push(newField);
+      isUnsaved.value = true;
     }
   }
 
   function addFieldFromDoctype(field: any) {
-    const _newField: FormField = {
-      idx: formResource.value.doc.fields.length + 1,
-      fieldtype: field.fieldtype,
-      label: field.label,
-      fieldname: field.fieldname,
-      options: field.options,
-      default: field.default,
-      description: field.description,
-    };
-
-    formResource.value.doc.fields.push(_newField);
+    if (formData.value) {
+      const _newField: FormField = {
+        idx: formData.value.fields.length + 1,
+        fieldtype: field.fieldtype,
+        label: field.label,
+        fieldname: field.fieldname,
+        options: field.options,
+        default: field.default,
+        description: field.description,
+      };
+      formData.value.fields.push(_newField);
+      isUnsaved.value = true;
+    }
   }
 
   function removeField(field: FormField) {
-    if (formResource.value?.doc?.fields) {
-      formResource.value.doc.fields = formResource.value.doc.fields.filter(
-        (f: FormField) => f !== field
-      );
+    if (formData.value?.fields) {
+      formData.value.fields = formData.value.fields.filter((f: FormField) => f !== field);
+      isUnsaved.value = true;
     }
   }
 
@@ -194,40 +146,29 @@ export const useEditForm = defineStore("editForm", () => {
   }
 
   function updateField(originalField: FormField, updatedField: FormField) {
-    if (formResource.value?.doc?.fields) {
-      const fieldIndex = formResource.value.doc.fields.findIndex(
-        (f: FormField) => f === originalField
-      );
+    if (formData.value?.fields) {
+      const fieldIndex = formData.value.fields.findIndex((f: FormField) => f === originalField);
       if (fieldIndex !== -1) {
-        formResource.value.doc.fields[fieldIndex] = updatedField;
+        formData.value.fields[fieldIndex] = updatedField;
+        isUnsaved.value = true;
       }
     }
   }
 
   return {
-    // State
     currentFormId,
-    formResource,
     isUnsaved,
-
-    // Computed
-    originalFormData,
     isLoading,
-    isError,
     formData,
     fields,
     selectedField,
     isPublished,
     doctypeFields,
-
-    // Actions
     initialize,
     reload,
     reset,
     save,
-    saveAndPublish,
     togglePublish,
-    updateFormData,
     addField,
     addFieldFromDoctype,
     selectField,
@@ -235,3 +176,4 @@ export const useEditForm = defineStore("editForm", () => {
     removeField,
   };
 });
+

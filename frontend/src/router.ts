@@ -55,36 +55,31 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: "/p/:route(.*)/edit/:submissionName",
-    name: "Public Edit Submission Page",
-    component: () => import("@/pages/submission/PublicEdit.vue"),
+    path: "/login",
+    name: "Login",
+    component: () => import("@/pages/Login.vue"),
+    meta: { allowGuest: true },
   },
 ];
 
 const router = createRouter({
-  history: createWebHistory("/forms"),
+  history: createWebHistory(),
   routes,
 });
 
 router.beforeEach(async (to, _from, next) => {
-  let isLoggedIn = session.isLoggedIn;
-  try {
-    await userResource.promise;
-  } catch (error) {
-    isLoggedIn = false;
-  }
+  const isLoggedIn = !!session.user;
 
   if (to.name === "Login" && isLoggedIn) {
-    next({ name: "Home" });
-  } else if (
-    to.name !== "Login" &&
-    !isLoggedIn &&
-    to.meta.allowGuest !== true
-  ) {
-    window.location.href = `/login?redirect-to=/forms${to.fullPath}`;
-  } else {
-    next();
+    return next({ name: "Dashboard" });
   }
+
+  if (to.meta.allowGuest !== true && !isLoggedIn) {
+    return next({ name: "Login" });
+  }
+
+  next();
 });
+
 
 export default router;

@@ -1,4 +1,4 @@
-import { useCall } from "frappe-ui";
+import api from "./api";
 
 /**
  * Check if login is required for a form submission page.
@@ -8,13 +8,13 @@ import { useCall } from "frappe-ui";
  * @returns bool - True if login is required, False otherwise.
  */
 export async function isLoginRequired(route: string) {
-  const loginRequired = useCall({
-    baseUrl: "/api/v2/method/",
-    url: "forms_pro.api.form.is_login_required",
-    params: { route },
-    immediate: false,
-  });
-
-  await loginRequired.execute();
-  return loginRequired.data;
+  try {
+    const response = await api.get("/forms/login-required", {
+      params: { route }
+    });
+    return response.data.loginRequired;
+  } catch (error) {
+    return false;
+  }
 }
+

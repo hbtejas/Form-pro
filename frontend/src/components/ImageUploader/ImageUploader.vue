@@ -76,15 +76,14 @@
 import { ref, computed, watch } from "vue";
 import { Cropper } from "vue-advanced-cropper";
 import "vue-advanced-cropper/dist/style.css";
-import { Button, Dialog, FileUploadHandler } from "frappe-ui";
-import type { UploadOptions, UploadedFile } from "frappe-ui";
+import { Button, Dialog } from "@/components/ui";
+import api from "@/utils/api";
 
 const props = withDefaults(
     defineProps<{
         cropDimensions: { width: number; height: number };
         fileTypes?: string | string[];
-        uploadArgs?: UploadOptions;
-        validateFile?: (file: File) => Promise<string | void>;
+        uploadArgs?: any;
     }>(),
     {
         fileTypes: () => ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"],
@@ -92,7 +91,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-    success: [data: UploadedFile];
+    success: [data: any];
     failure: [error: unknown];
 }>();
 
@@ -128,10 +127,6 @@ function openFileSelector() {
     inputRef.value?.click();
 }
 
-function inputRefMethod() {
-    return inputRef.value;
-}
-
 function revokeCropUrl() {
     if (cropImageUrl.value) {
         URL.revokeObjectURL(cropImageUrl.value);
@@ -158,19 +153,6 @@ async function onFileAdd(e: Event) {
     file.value = selectedFile ?? null;
 
     if (!selectedFile) return;
-
-    if (props.validateFile) {
-        try {
-            const msg = await props.validateFile(selectedFile);
-            if (msg) {
-                error.value = msg;
-                return;
-            }
-        } catch (err) {
-            error.value = err instanceof Error ? err.message : "Validation failed";
-            return;
-        }
-    }
 
     revokeCropUrl();
     cropImageUrl.value = URL.createObjectURL(selectedFile);
@@ -220,64 +202,38 @@ async function onCropAndUpload() {
     uploadFile(croppedFile);
 }
 
-function uploadFile(fileToUpload: File) {
+async function uploadFile(fileToUpload: File) {
     error.value = null;
     uploaded.value = 0;
     total.value = 0;
     finishedUploading.value = false;
+    uploading.value = true;
 
-    const uploader = new FileUploadHandler();
-    uploader.on("start", () => {
-        uploading.value = true;
-    });
-    uploader.on("progress", (data: { uploaded: number; total: number }) => {
-        uploaded.value = data.uploaded;
-        total.value = data.total;
-    });
-    uploader.on("error", () => {
-        uploading.value = false;
-        error.value = "Error Uploading File";
-    });
-    uploader.on("finish", () => {
+    const formData = new FormData();
+    formData.append("file", fileToUpload);
+
+    try {
+        const response = await api.post("/files/upload", formData, {
+            onUploadProgress: (progressEvent) => {
+                uploaded.value = progressEvent.loaded;
+                total.value = progressEvent.total || 0;
+            },
+        });
         uploading.value = false;
         finishedUploading.value = true;
-    });
-
-    uploader
-        .upload(fileToUpload, props.uploadArgs ?? {})
-        .then((data: UploadedFile) => {
-            emit("success", data);
-        })
-        .catch((err: unknown) => {
-            uploading.value = false;
-            let errorMessage = "Error Uploading File";
-            const errorObj = err as { _server_messages?: string; exc?: string };
-            if (errorObj?._server_messages) {
-                try {
-                    const parsed = JSON.parse(JSON.parse(errorObj._server_messages)[0]);
-                    if (parsed?.message) errorMessage = parsed.message;
-                } catch {
-                    // keep default
-                }
-            } else if (errorObj?.exc) {
-                try {
-                    const lines = JSON.parse(errorObj.exc)[0]?.split("\n") ?? [];
-                    const last = lines.slice(-2, -1)[0];
-                    if (last) errorMessage = last;
-                } catch {
-                    // keep default
-                }
-            }
-            error.value = errorMessage;
-            emit("failure", err);
-        });
+        emit("success", response.data);
+    } catch (err: any) {
+        uploading.value = false;
+        error.value = err.response?.data?.message || "Error Uploading File";
+        emit("failure", err);
+    }
 }
 
 defineExpose({
     openFileSelector,
-    inputRef: inputRefMethod,
 });
 </script>
+
 
 <style scoped>
 .cropper-container {

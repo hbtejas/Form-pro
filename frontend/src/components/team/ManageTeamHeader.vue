@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import TeamLogo from "@/components/team/TeamLogo.vue";
 import ImageUploader from "@/components/ImageUploader/ImageUploader.vue";
-import { Button, ErrorMessage } from "frappe-ui";
+import { Button, ErrorMessage, Input } from "@/components/ui";
 import { useTeam } from "@/stores/team";
-import { EditableArea, EditableInput, EditablePreview, EditableRoot } from "reka-ui";
 import { ref, watch } from "vue";
+import { Upload, Edit2, Check, X } from "lucide-vue-next";
 
 const teamStore = useTeam();
 
 const teamName = ref(teamStore.currentTeam?.team_name ?? "");
+const isEditing = ref(false);
+
 watch(
     () => teamStore.currentTeam?.team_name,
     (val) => {
@@ -18,73 +20,89 @@ watch(
 
 function onSubmit() {
     const trimmed = teamName.value?.trim();
-    if (!trimmed || trimmed === teamStore.currentTeam?.team_name) return;
+    if (!trimmed || trimmed === teamStore.currentTeam?.team_name) {
+        isEditing.value = false;
+        return;
+    }
     teamStore.save({ team_name: trimmed });
+    isEditing.value = false;
+}
+
+function cancel() {
+    teamName.value = teamStore.currentTeam?.team_name ?? "";
+    isEditing.value = false;
 }
 </script>
 <template>
-    <div class="flex gap-4 w-full">
-        <div class="rounded p-4 w-1/6 flex flex-col gap-4 items-center justify-center">
+    <div class="flex flex-col md:flex-row gap-6 w-full bg-white p-6 rounded-lg border shadow-sm">
+        <div class="flex flex-col gap-4 items-center justify-center">
             <TeamLogo
-                class-names="h-16 rounded-full"
-                :team-name="teamStore.currentTeam!.team_name"
+                class-names="h-24 w-24 rounded-full border-4 border-gray-100 shadow-inner"
+                :team-name="teamStore.currentTeam?.team_name || 'Team'"
                 :logo-url="teamStore.currentTeam?.logo ?? null"
             />
             <ImageUploader
                 :crop-dimensions="{ width: 400, height: 400 }"
-                :upload-args="{ folder: 'Home' }"
-                @success="(file) => teamStore.save({ logo: file.file_url })"
+                @success="(file) => teamStore.save({ logo: (file as any).file_url })"
             >
                 <template #default="{ uploading, progress, error, openFileSelector }">
-                    <ErrorMessage :message="error ?? undefined" />
+                    <ErrorMessage v-if="error">
+                        {{ error }}
+                    </ErrorMessage>
                     <Button
-                        :label="
+                        variant="outline"
+                        :loading="uploading"
+                        @click="openFileSelector"
+                        class="w-full"
+                    >
+                        <template #icon-left>
+                            <Upload class="w-4 h-4" />
+                        </template>
+                        {{
                             teamStore.currentTeam?.logo
                                 ? 'Change'
                                 : uploading
                                 ? `Uploading ${progress}%`
                                 : 'Upload Logo'
-                        "
-                        icon-left="upload"
-                        variant="outline"
-                        :loading="uploading"
-                        @click="openFileSelector"
-                    />
+                        }}
+                    </Button>
                 </template>
             </ImageUploader>
         </div>
-        <div class="flex pt-4">
-            <EditableRoot
-                v-slot="{ isEditing, submit, cancel, edit }"
-                v-model="teamName"
-                placeholder="Enter team name..."
-                class="flex flex-col gap-4"
-                auto-resize
-                submit-mode="none"
-                @submit="onSubmit"
-            >
-                <EditableArea class="text-2xl font-semibold text-gray-900">
-                    <EditablePreview />
-                    <EditableInput class="w-full outline-none bg-transparent" />
-                </EditableArea>
-                <Button
-                    v-if="!isEditing"
-                    class="max-w-20"
-                    label="Edit"
-                    variant="outline"
-                    @click="edit"
+        <div class="flex-1 flex flex-col justify-center">
+            <label class="text-xs font-bold uppercase text-gray-500 tracking-widest mb-1">Team Name</label>
+            <div v-if="!isEditing" class="flex items-center gap-3">
+                <h1 class="text-3xl font-bold text-gray-900">{{ teamStore.currentTeam?.team_name }}</h1>
+                <Button variant="ghost" @click="isEditing = true">
+                    <template #icon-left>
+                        <Edit2 class="w-4 h-4 text-gray-400" />
+                    </template>
+                </Button>
+            </div>
+            <div v-else class="flex flex-col gap-3 max-w-md">
+                <Input
+                    v-model="teamName"
+                    placeholder="Enter team name..."
+                    autofocus
+                    @keyup.enter="onSubmit"
+                    @keyup.esc="cancel"
                 />
-                <div v-else class="flex gap-2">
-                    <Button class="max-w-20" label="Save" variant="solid" @click="submit" />
-                    <Button
-                        class="max-w-20"
-                        label="Cancel"
-                        theme="red"
-                        variant="outline"
-                        @click="cancel"
-                    />
+                <div class="flex gap-2">
+                    <Button variant="solid" @click="onSubmit">
+                        <template #icon-left>
+                            <Check class="w-4 h-4" />
+                        </template>
+                        Save
+                    </Button>
+                    <Button variant="outline" @click="cancel">
+                        <template #icon-left>
+                            <X class="w-4 h-4" />
+                        </template>
+                        Cancel
+                    </Button>
                 </div>
-            </EditableRoot>
+            </div>
         </div>
     </div>
 </template>
+

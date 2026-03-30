@@ -1,7 +1,12 @@
 {
-  "name": "frappe-ui-frontend",
+  "name": "form-pro-mern-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Premium Forms Pro Application - MERN Stack",
+  "author": "Forms Pro Team",
+  "contributors": [
+    "Tejas <tejas@example.com>"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +14,6 @@
     "preview": "vite preview",
     "lint": "eslint ."
   },
-
   "dependencies": {
     "@lottiefiles/dotlottie-vue": "^0.10.4",
     "@tanstack/vue-query": "^5.95.2",
@@ -17,10 +21,10 @@
     "axios": "^1.14.0",
     "dayjs": "^1.11.19",
     "feather-icons": "^4.29.2",
-    "frappe-ui": "^0.1.262",
     "lucide-vue-next": "^0.575.0",
     "pinia": "^3.0.4",
     "pins": "^0.1.0",
+    "reka-ui": "latest",
     "socket.io-client": "^4.7.2",
     "vue": "^3.5.13",
     "vue-advanced-cropper": "^2.6.2",
@@ -43,3 +47,4 @@
     "vue-tsc": "^3.2.4"
   }
 }
+

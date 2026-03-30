@@ -1,12 +1,16 @@
-import router from "@/router";
-import { createResource } from "frappe-ui";
+import api from "@/utils/api";
 
-export const userResource = createResource({
-  url: "frappe.auth.get_logged_user",
-  cache: "User",
-  onError(error: any) {
-    if (error && error.exc_type === "AuthenticationError") {
-      router.push({ name: "LoginPage" });
+export const userResource = {
+  data: null as any,
+  loading: false,
+  fetch: async () => {
+    try {
+      const resp = await api.get("/user/current");
+      userResource.data = resp.data;
+    } catch (err) {
+      userResource.data = null;
     }
   },
-});
+  promise: Promise.resolve(),
+};
+

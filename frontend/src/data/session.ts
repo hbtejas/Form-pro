@@ -1,59 +1,39 @@
+import api from "@/utils/api";
 import router from "@/router";
-import { createResource } from "frappe-ui";
-import { computed, ComputedRef, reactive } from "vue";
-
+import { computed, reactive } from "vue";
 import { userResource } from "./user";
-
-type Resource<T = any> = ReturnType<typeof createResource<T>>;
 
 export type Session = {
   user: string | null;
   full_name: string | null;
-  isLoggedIn: ComputedRef<boolean>;
-  login: Resource<any>;
-  logout: Resource<any>;
+  isLoggedIn: any;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
-export function sessionUser() {
-  const cookies = new URLSearchParams(document.cookie.split("; ").join("&"));
-  let _sessionUser = cookies.get("user_id");
-  if (_sessionUser === "Guest") {
-    _sessionUser = null;
+const sessionData: Session = {
+  user: localStorage.getItem("user_id"),
+  full_name: localStorage.getItem("full_name"),
+  isLoggedIn: computed(() => !!session.user),
+  async login(email, password) {
+    const resp = await api.post("/auth/login", { email, password });
+    const data = resp.data;
+    localStorage.setItem("user_id", data.user_id);
+    localStorage.setItem("full_name", data.full_name);
+    session.user = data.user_id;
+    session.full_name = data.full_name;
+    await userResource.fetch();
+    router.replace("/");
+  },
+  async logout() {
+    await api.post("/auth/logout");
+    localStorage.clear();
+    session.user = null;
+    session.full_name = null;
+    window.location.href = "/login";
   }
-  return _sessionUser;
-}
+};
 
-function fullName() {
-  const cookies = new URLSearchParams(document.cookie.split("; ").join("&"));
-  let _fullName = cookies.get("full_name");
-  return _fullName;
-}
+export const session = reactive<Session>(sessionData);
 
-export const session = reactive<Session>({
-  login: createResource({
-    url: "login",
-    makeParams({ email, password }: { email: string; password: string }) {
-      return {
-        usr: email,
-        pwd: password,
-      };
-    },
-    onSuccess(data: { default_route?: string }) {
-      userResource.reload();
-      session.user = sessionUser();
-      session.login.reset();
-      router.replace(data.default_route || "/");
-    },
-  }),
-  logout: createResource({
-    url: "logout",
-    onSuccess() {
-      userResource.reset();
-      session.user = sessionUser();
-      window.location.href = `/login?redirect-to=/forms`;
-    },
-  }),
-  user: sessionUser(),
-  full_name: fullName(),
-  isLoggedIn: computed((): boolean => !!session.user),
-} as Session);
+

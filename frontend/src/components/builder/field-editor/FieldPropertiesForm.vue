@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useEditForm } from "@/stores/editForm";
-import { FormControl } from "frappe-ui";
+import { Input, Checkbox, Select, Textarea } from "@/components/ui";
 import { FormField, FormFieldTypes } from "@/types/formfield";
 import { computed } from "vue";
 import type { Component } from "vue";
@@ -18,83 +18,58 @@ const fieldProperties = computed(() => {
     return [
         {
             fieldname: "label",
-            component: FormControl,
+            component: Input,
             props: {
-                type: "text",
-                label: "Label",
-                required: true,
-                variant: "outline",
+                placeholder: "Label",
             },
         },
         {
             fieldname: "fieldname",
-            component: FormControl,
+            component: Input,
             props: {
-                type: "text",
-                label: "Fieldname",
-                required: true,
-                variant: "outline",
+                placeholder: "Fieldname",
             },
         },
         {
             fieldname: "fieldtype",
-            component: FormControl,
+            component: Select,
             props: {
-                type: "select",
-                label: "Fieldtype",
-                required: true,
-                variant: "outline",
                 options: Object.values(FormFieldTypes),
             },
         },
         {
             fieldname: "reqd",
-            component: FormControl,
+            component: Checkbox,
             props: {
-                type: "checkbox",
                 label: "Mandatory",
-                description: "If enabled, the field becomes required and cannot be left blank.",
             },
         },
         {
             fieldname: "hidden",
-            component: FormControl,
+            component: Checkbox,
             props: {
-                type: "checkbox",
                 label: "Hidden",
-                description: "If enabled, the field is hidden from the form.",
             },
         },
         {
             fieldname: "description",
-            component: FormControl,
+            component: Textarea,
             props: {
-                type: "textarea",
-                label: "Description",
-                required: false,
-                variant: "outline",
-                rows: 5,
+                placeholder: "Description",
             },
         },
         {
             fieldname: "options",
-            component: FormControl,
+            component: Textarea,
             props: {
-                type: "textarea",
-                label: "Options",
-                description: "Enter the options for the field, one per line.",
-                variant: "outline",
-                rows: 5,
+                placeholder: "Options",
             },
         },
         {
             fieldname: "default",
-            component: FormControl,
+            component: Input,
             props: {
-                type: "text",
-                label: "Default Value",
-                description: "The default value for the field.",
-                variant: "outline",
+                placeholder: "Default Value",
             },
         },
         {
@@ -102,7 +77,7 @@ const fieldProperties = computed(() => {
             component: ConditionalLogicSection,
             props: {},
         },
-    ] as FieldProperty[];
+    ] as any[];
 });
 </script>
 <template>
@@ -110,16 +85,25 @@ const fieldProperties = computed(() => {
         class="flex flex-col gap-6 p-4 w-full"
         data-form-builder-component="field-properties-form"
     >
-        <h3 class="text-lg font-medium">Edit Properties</h3>
+        <div class="flex flex-col gap-1">
+            <h3 class="text-lg font-bold">Edit Properties</h3>
+            <p class="text-sm text-gray-500">Configure field behavior and display</p>
+        </div>
         <hr />
         <template v-if="editFormStore.selectedField">
             <template v-for="property in fieldProperties" :key="property.fieldname">
-                <component
-                    :is="property.component"
-                    v-model="editFormStore.selectedField[property.fieldname]"
-                    v-bind="property.props"
-                />
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-semibold uppercase text-gray-500 tracking-wider">
+                        {{ property.fieldname }}
+                    </label>
+                    <component
+                        :is="property.component"
+                        v-model="editFormStore.selectedField[property.fieldname]"
+                        v-bind="property.props"
+                    />
+                </div>
             </template>
         </template>
     </div>
 </template>
+

@@ -1,9 +1,7 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import { createResource, useDoc } from "frappe-ui";
+import { ref, computed, reactive } from "vue";
+import api from "@/utils/api";
 import { toast } from "vue-sonner";
-// @ts-ignore
-import { sessionUser } from "@/data/session";
 
 export type PermissionTypes = "read" | "write" | "share" | "submit";
 
@@ -26,131 +24,75 @@ export type SharedAccessUser = {
 
 export const useManageForm = defineStore("manageForm", () => {
   const currentFormId = ref<string>("");
-  const formData = computed(() => formResource.value?.doc || null);
-  const formFields = computed(() => formResource.value?.doc?.fields || []);
-  const formResource = ref<any>(null);
-  const formOwner = computed(() => formResource.value?.doc?.owner || null);
-  const sharedAccessUsers = computed<SharedAccessUser[]>(
-    () => formAccessResource.data || []
-  );
+  const formData = ref<any>(null);
+  const formFields = computed(() => formData.value?.fields || []);
+  const formOwner = computed(() => formData.value?.owner || null);
+  
+  const formAccessResource = reactive({
+    data: [] as SharedAccessUser[],
+    loading: false,
+    async fetch() {
+      if (!currentFormId.value) return;
+      this.loading = true;
+      try {
+        const resp = await api.get(`/forms/${currentFormId.value}/access`);
+        this.data = resp.data;
+      } catch (err) {
+        this.data = [];
+      } finally {
+        this.loading = false;
+      }
+    }
+  });
 
-  // Check if the current user has share access to the form
-  const userHasShareAccess = computed<boolean>(
-    () =>
-      formAccessResource.data?.find(
-        (user: SharedAccessUser) => user.email === sessionUser()
-      )?.share ?? false
-  );
+  const sharedAccessUsers = computed<SharedAccessUser[]>(() => formAccessResource.data);
 
-  const formAccessResource = createResource({
-    url: "forms_pro.api.form.get_form_shared_with",
-    method: "GET",
-    makeParams() {
-      return {
-        form_id: currentFormId.value,
-      };
-    },
+  const userHasShareAccess = computed<boolean>(() => {
+    const userEmail = localStorage.getItem("user_id");
+    return formAccessResource.data?.find(
+      (user: SharedAccessUser) => user.email === userEmail
+    )?.share ?? false;
   });
 
   async function initialize(formId: string) {
     currentFormId.value = formId;
-    formResource.value = useDoc({
-      doctype: "Form",
-      name: formId,
-    });
-    formAccessResource.fetch();
+    try {
+      const resp = await api.get(`/forms/${formId}`);
+      formData.value = resp.data;
+      await formAccessResource.fetch();
+    } catch (err) {
+      toast.error("Failed to load form details");
+    }
   }
 
-  /**
-   * Add access to the form for a user
-   * @param userId - The ID of the user to add access to
-   * @param access - The access permissions to add (read, write, share, submit)
-   */
-  function addAccess(userId: string, access: AccessPermissions) {
-    const _access = createResource({
-      url: "frappe.share.add",
-      method: "POST",
-      makeParams() {
-        return {
-          doctype: "Form",
-          name: currentFormId.value,
-          user: userId,
-          read: Boolean(access.read),
-          write: Boolean(access.write),
-          share: Boolean(access.share),
-          submit: Boolean(access.submit),
-        };
-      },
-      onSuccess() {
-        formAccessResource.reload();
-        toast.success("Access added successfully");
-      },
-      onError(error: Error) {
-        toast.error("Failed to give access to the user", {
-          description: error.message,
-        });
-      },
-    });
-    _access.submit();
+  async function addAccess(userId: string, access: AccessPermissions) {
+    try {
+      await api.post(`/forms/${currentFormId.value}/access`, { userId, ...access });
+      await formAccessResource.fetch();
+      toast.success("Access added successfully");
+    } catch (err: any) {
+      toast.error("Failed to give access to the user", { description: err.message });
+    }
   }
 
-  /**
-   * Set a permission for a user
-   * @param userId - The ID of the user to set the permission for
-   * @param permission - The permission to set (read, write, share, submit)
-   * @param value - The value of the permission (true or false)
-   */
-  function setPermission(
-    userId: string,
-    permission: PermissionTypes,
-    value: boolean
-  ) {
-    const _permission = createResource({
-      url: "frappe.share.set_permission",
-      method: "POST",
-      makeParams() {
-        return {
-          doctype: "Form",
-          name: currentFormId.value,
-          user: userId,
-          permission_to: permission,
-          value: value ? 1 : 0,
-        };
-      },
-      onSuccess() {
-        formAccessResource.reload();
-        toast.success("Permission set successfully");
-      },
-      onError(error: Error) {
-        toast.error("Failed to set permission", {
-          description: error.message,
-        });
-      },
-    });
-    _permission.submit();
+  async function setPermission(userId: string, permission: PermissionTypes, value: boolean) {
+    try {
+      await api.patch(`/forms/${currentFormId.value}/access`, { userId, permission, value });
+      await formAccessResource.fetch();
+      toast.success("Permission set successfully");
+    } catch (err: any) {
+      toast.error("Failed to set permission", { description: err.message });
+    }
   }
 
-  function removeAccess(userEmail: string) {
-    const _removeAccess = createResource({
-      url: "forms_pro.api.form.remove_form_access",
-      method: "DELETE",
-      makeParams() {
-        return {
-          form_id: currentFormId.value,
-          user_email: userEmail,
-        };
-      },
-      onSuccess() {
-        formAccessResource.reload();
-        toast.success("Access removed successfully");
-      },
-      onError(error: Error) {
-        toast.error("Failed to remove access", {
-          description: error.message,
-        });
-      },
-    });
-    _removeAccess.submit();
+  async function removeAccess(userEmail: string) {
+    try {
+      await api.delete(`/forms/${currentFormId.value}/access/${userEmail}`);
+      await formAccessResource.fetch();
+      toast.success("Access removed successfully");
+    } catch (err: any) {
+      toast.error("Failed to remove access", { description: err.message });
+    }
   }
 
   return {
@@ -164,7 +106,6 @@ export const useManageForm = defineStore("manageForm", () => {
     currentFormId,
     formData,
     formFields,
-    formResource,
-    formAccessResource,
   };
 });
+

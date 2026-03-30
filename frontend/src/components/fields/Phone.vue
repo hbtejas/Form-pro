@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
-import { FormControl } from "frappe-ui";
+import { Input } from "@/components/ui";
 import { ChevronDown, ChevronUp } from "lucide-vue-next";
 import { onClickOutside } from "@vueuse/core";
+
 
 export type Country = {
     code: string; // ISO country code (e.g., "IN", "US")
@@ -218,17 +219,16 @@ const handlePhoneNumberChange = (value: string) => {
 <template>
     <div class="flex flex-col gap-2">
         <div class="relative">
-            <FormControl
+            <Input
                 :model-value="phoneNumber"
                 @update:model-value="handlePhoneNumberChange"
                 type="tel"
                 :placeholder="field.placeholder || 'Example: 081234 56789'"
-                :variant="variant as 'outline' | 'subtle' | undefined"
-                :description="field.description"
                 :disabled="field.disabled"
                 :readonly="field.readonly"
                 class="phone-input-with-prefix"
             >
+
                 <template #prefix>
                     <div class="relative flex items-center h-full">
                         <button

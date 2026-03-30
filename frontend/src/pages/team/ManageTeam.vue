@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTeam } from "@/stores/team";
 import TeamMemberList from "@/components/team/TeamMemberList.vue";
-import { Breadcrumbs, LoadingText } from "frappe-ui";
+import { Breadcrumbs, LoadingText } from "@/components/ui";
 import ManageTeamHeader from "@/components/team/ManageTeamHeader.vue";
 
 const teamStore = useTeam();
@@ -9,7 +9,7 @@ teamStore.initialize();
 </script>
 <template>
     <div v-if="teamStore.teamMembersResource.loading">
-        <LoadingText text="Loading team info..." class="h-5" />
+        <LoadingText label="Loading team info..." class="h-5" />
     </div>
     <div v-else>
         <div class="flex flex-col gap-8">
@@ -25,3 +25,4 @@ teamStore.initialize();
         </div>
     </div>
 </template>
+

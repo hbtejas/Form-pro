@@ -1,4 +1,4 @@
-import { getForm, submitForm as submitApi } from "@/utils/api";
+import api from "@/utils/api";
 import { toast } from "vue-sonner";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
@@ -10,15 +10,10 @@ import {
 } from "@/utils/conditionals";
 
 export type UserSubmission = {
-  name: string;
-  creation: string;
-  modified: string;
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
 };
-
-export enum SubmissionStatus {
-  DRAFT = "Draft",
-  SUBMITTED = "Submitted",
-}
 
 export const useSubmissionForm = defineStore("submissionForm", () => {
   const currentForm = ref<any>(null);
@@ -47,11 +42,13 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
     fields.value = _fields;
   }
 
-  async function initialize(route: string) {
-    currentFormRoute.value = route;
+  async function initialize(routeOrId: string) {
+    if (!routeOrId) return;
+    currentFormRoute.value = routeOrId;
     isLoading.value = true;
     try {
-      const data = await getForm(route);
+      const resp = await api.get(`/forms/public/${routeOrId}`);
+      const data = resp.data;
       currentForm.value = data;
       initializeFields();
 
@@ -69,13 +66,15 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
   }
 
   async function submitForm(is_draft: boolean = false, ignore_validations: boolean = false) {
+    if (!currentForm.value) return;
+    
     if (!ignore_validations) {
       validateValues();
       if (errors.value.length > 0) return;
     }
 
     try {
-      await submitApi(currentForm.value._id, fields.value);
+      await api.post(`/forms/${currentForm.value._id}/submissions`, { values: fields.value });
       clearDraft();
       if (is_draft) {
         toast.info("Draft saved successfully");
@@ -122,4 +121,5 @@ export const useSubmissionForm = defineStore("submissionForm", () => {
     submitForm,
   };
 });
+
 

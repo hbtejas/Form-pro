@@ -11,7 +11,8 @@ import {
   TextEditor,
   TimePicker,
   Password,
-} from "frappe-ui";
+} from "@/components/ui";
+
 import { Component } from "vue";
 import Attachment from "@/components/fields/Attachment.vue";
 import Phone from "@/components/fields/Phone.vue";

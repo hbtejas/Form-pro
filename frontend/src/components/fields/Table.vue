@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { useCall, Button } from "frappe-ui";
-import { computed } from "vue";
+import { Button } from "@/components/ui";
+import { computed, ref, onMounted } from "vue";
 import FieldRenderer from "../builder/FieldRenderer.vue";
 import { mapDoctypeFieldForForm } from "@/utils/form_fields";
+import api from "@/utils/api";
+import { X } from "lucide-vue-next";
 
 type Row = {
     [key: string]: any;
@@ -10,27 +12,29 @@ type Row = {
 
 const rows = defineModel<Row[]>({ default: [] });
 
-type props = {
+type Props = {
     inEditMode: boolean;
     doctype: string;
 };
 
-const props = defineProps<props>();
+const props = defineProps<Props>();
 
-const columnResource = useCall({
-    url: "forms_pro.api.form.get_doctype_fields",
-    baseUrl: "/api/v2/method/",
-    params: {
-        doctype: props.doctype,
-    },
-});
+const columnsData = ref<any[]>([]);
+
+async function fetchColumns() {
+    if (!props.doctype) return;
+    try {
+        const resp = await api.get("/doctypes/fields", { params: { doctype: props.doctype } });
+        columnsData.value = resp.data;
+    } catch (err) {
+        columnsData.value = [];
+    }
+}
+
+onMounted(fetchColumns);
 
 const columns = computed(() => {
-    const data = columnResource.data;
-    if (!Array.isArray(data)) {
-        return [];
-    }
-    return data.map((column: any) => ({
+    return columnsData.value.map((column: any) => ({
         label: column.label,
         key: column.fieldname,
         ...column,
@@ -57,22 +61,25 @@ function updateCell(rowIndex: number, key: string, value: unknown) {
 }
 </script>
 <template>
-    <div class="flex flex-col gap-5 p-4 bg-surface-gray-1 border rounded">
+    <div class="flex flex-col gap-5 p-4 bg-gray-50 border rounded">
         <div v-if="!rows.length" class="flex flex-col gap-2 items-center justify-center">
-            <h5 class="text-base font-medium text-ink-gray-6">No rows added</h5>
-            <p class="text-sm text-ink-gray-5">Add an item to get started</p>
+            <h5 class="text-base font-medium text-gray-600">No rows added</h5>
+            <p class="text-sm text-gray-500">Add an item to get started</p>
         </div>
         <div
             v-for="(_, index) in rows"
             :key="index"
-            class="border-b border-gray-400 pb-4 border p-4 rounded bg-surface-white relative"
+            class="pb-4 border p-4 rounded bg-white relative mb-4 shadow-sm"
         >
             <Button
-                icon="x"
                 variant="outline"
-                class="absolute -top-2 -right-2 w-4 h-4"
+                class="absolute -top-2 -right-2 w-6 h-6 p-0 flex items-center justify-center rounded-full bg-white"
                 @click="removeRow(index)"
-            />
+            >
+                <template #icon-left>
+                    <X class="w-4 h-4" />
+                </template>
+            </Button>
             <FieldRenderer
                 v-for="column in columns"
                 :key="column.key"
@@ -83,5 +90,6 @@ function updateCell(rowIndex: number, key: string, value: unknown) {
             />
         </div>
     </div>
-    <Button v-if="!inEditMode" @click="addRow">Add Row</Button>
+    <Button v-if="!inEditMode" variant="solid" class="mt-4" @click="addRow">Add Row</Button>
 </template>
+

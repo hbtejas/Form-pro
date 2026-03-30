@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import draggableComponent from "vuedraggable";
-import { LoadingIndicator, TextEditor, Button } from "frappe-ui";
+import { LoadingIndicator, TextEditor, Button } from "@/components/ui";
 import { useEditForm } from "@/stores/editForm";
-import { GripVertical } from "lucide-vue-next";
+import { GripVertical, X } from "lucide-vue-next";
 import { FormField } from "@/types/formfield";
 import { ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
 import FieldRenderer from "@/components/builder/FieldRenderer.vue";
+
 
 const editFormStore = useEditForm();
 
@@ -162,11 +163,15 @@ onClickOutside(fieldContentRef, (event) => {
                             :inEditMode="true"
                         />
                         <Button
-                            icon="x"
                             variant="outline"
                             class="absolute -top-2 -right-2"
-                            @click="editFormStore.removeField(element)"
-                        />
+                            @click.stop="editFormStore.removeField(element)"
+                        >
+                            <template #icon-left>
+                                <X class="w-4 h-4" />
+                            </template>
+                        </Button>
+
                     </div>
                 </template>
             </draggableComponent>

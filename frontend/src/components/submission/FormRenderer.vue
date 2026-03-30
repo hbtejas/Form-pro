@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ErrorMessage, LoadingIndicator, Button } from "frappe-ui";
+import { ErrorMessage, LoadingIndicator, Button } from "@/components/ui";
 import { useSubmissionForm } from "@/stores/submissionForm";
 import FieldRenderer from "@/components/builder/FieldRenderer.vue";
 import { computed } from "vue";
@@ -20,7 +20,7 @@ const props = withDefaults(
 // Computed property to get visible fields based on conditional logic
 // This will automatically update when form values change
 const visibleFields = computed(() => {
-    const fields = submissionFormStore.formResource.data?.fields || [];
+    const fields = submissionFormStore.currentForm?.fields || [];
     return fields.filter((field: FormField) =>
         shouldFieldBeVisible(field, submissionFormStore.fields, fields)
     );
@@ -44,23 +44,19 @@ function handleSubmitForm() {
                     reqd: shouldFieldBeRequired(
                         field,
                         submissionFormStore.fields,
-                        submissionFormStore.formResource.data?.fields || []
+                        submissionFormStore.currentForm?.fields || []
                     ),
                 }"
                 :inEditMode="false"
             />
         </div>
         <hr />
-        <ErrorMessage :message="submissionFormStore.errors.join('\n')" />
+        <ErrorMessage v-if="submissionFormStore.errors.length">
+            {{ submissionFormStore.errors.join('\n') }}
+        </ErrorMessage>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <slot name="actions">
-                <Button
-                    v-if="submissionFormStore.allowIncompleteForms"
-                    @click="submissionFormStore.saveAsDraft"
-                    :loading="submissionFormStore.isLoading"
-                >
-                    Save as draft
-                </Button>
                 <Button
                     variant="solid"
                     @click="handleSubmitForm"
@@ -72,3 +68,4 @@ function handleSubmitForm() {
         </div>
     </div>
 </template>
+

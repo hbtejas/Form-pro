@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { useUser } from "./user";
-import { computed, watch } from "vue";
-import { useCall, createResource } from "frappe-ui";
+import { computed, watch, reactive } from "vue";
+import api from "@/utils/api";
 import { toast } from "vue-sonner";
 
 export type TeamMember = {
@@ -15,92 +15,64 @@ export type TeamMember = {
 export const useTeam = defineStore("team", () => {
   const user = useUser();
   const currentTeam = computed(() => user.currentTeam);
-  const teamMembers = computed<TeamMember[]>(() => {
-    const data = teamMembersResource.data;
-    return Array.isArray(data) ? data : [];
+  
+  const teamMembersResource = reactive({
+    data: [] as TeamMember[],
+    loading: false,
+    async fetch() {
+      if (!currentTeam.value?._id) return;
+      this.loading = true;
+      try {
+        const resp = await api.get(`/teams/${currentTeam.value._id}/members`);
+        this.data = resp.data;
+      } catch (err) {
+        this.data = [];
+      } finally {
+        this.loading = false;
+      }
+    }
   });
 
-  const teamMembersResource = useCall({
-    baseUrl: "/api/v2/method/",
-    url: "forms_pro.api.team.get_team_members",
-    params() {
-      return {
-        team_id: currentTeam.value?.name,
-      };
-    },
-  });
+  const teamMembers = computed<TeamMember[]>(() => teamMembersResource.data);
 
   function initialize() {
     teamMembersResource.fetch();
   }
 
-  function toggleEditPermissionForMember(member_email: string) {
-    createResource({
-      url: "forms_pro.api.team.toggle_can_edit_team",
-      method: "POST",
-      makeParams() {
-        return {
-          team_id: currentTeam.value?.name,
-          member_email: member_email,
-        };
-      },
-      async onSuccess() {
-        await teamMembersResource.fetch();
-        toast.info("Edit Permission Updated");
-      },
-      onError(error: Error) {
-        console.error(error);
-        toast.error(`Failed to update edit permission`);
-      },
-    }).submit();
+  async function toggleEditPermissionForMember(member_email: string) {
+    try {
+      await api.post(`/teams/${currentTeam.value?._id}/members/toggle-permission`, { member_email });
+      await teamMembersResource.fetch();
+      toast.info("Edit Permission Updated");
+    } catch (err) {
+      toast.error(`Failed to update edit permission`);
+    }
   }
 
-  function removeMemberFromTeam(member_email: string) {
-    createResource({
-      url: "forms_pro.api.team.remove_member_from_team",
-      method: "POST",
-      makeParams() {
-        return {
-          team_id: currentTeam.value?.name,
-          member_email: member_email,
-        };
-      },
-      onSuccess() {
-        teamMembersResource.reload();
-        toast.success("Member removed from team");
-      },
-      onError(error: Error) {
-        console.error(error);
-        toast.error(`Failed to remove member from team`);
-      },
-    }).submit();
+  async function removeMemberFromTeam(member_email: string) {
+    try {
+      await api.post(`/teams/${currentTeam.value?._id}/members/remove`, { member_email });
+      await teamMembersResource.fetch();
+      toast.success("Member removed from team");
+    } catch (err) {
+      toast.error(`Failed to remove member from team`);
+    }
   }
 
   async function save(fields: { team_name?: string; logo?: string }) {
-    createResource({
-      url: "forms_pro.api.team.save",
-      method: "POST",
-      makeParams() {
-        return {
-          team_id: currentTeam.value?.name,
-          fields,
-        };
-      },
-      async onSuccess() {
-        toast.success("Team Details Updated");
-        await teamMembersResource.fetch();
-        user.fetchUserTeams();
-      },
-      onError(error: Error) {
-        console.error(error);
-        toast.error("Failed to update team " + error.message);
-      },
-    }).submit();
+    try {
+      await api.patch(`/teams/${currentTeam.value?._id}`, fields);
+      toast.success("Team Details Updated");
+      await teamMembersResource.fetch();
+      user.fetchUserTeams();
+    } catch (err: any) {
+      toast.error("Failed to update team " + err.message);
+    }
   }
 
   watch(currentTeam, () => {
     teamMembersResource.fetch();
-  });
+  }, { immediate: true });
 
   return {
     currentTeam,
@@ -112,3 +84,4 @@ export const useTeam = defineStore("team", () => {
     save,
   };
 });
+

@@ -1,54 +1,32 @@
-import { createResource } from "frappe-ui";
+import api from "./api";
 
 export const createNewFormWithDoctype = async (
   linked_doctype: string,
   team_id: string
 ) => {
-  const form = createResource({
-    url: "forms_pro.utils.form_generator.create_form_with_doctype",
-    makeParams() {
-      return {
-        doctype: linked_doctype,
-        team_id: team_id,
-      };
-    },
+  const response = await api.post("/forms/from-doctype", {
+    doctype: linked_doctype,
+    team_id: team_id,
   });
-
-  await form.fetch();
-  return form.data;
+  return response.data;
 };
 
 export const createNewForm = async (team_id: string) => {
-  const form = createResource({
-    url: "forms_pro.utils.form_generator.create_form",
-    makeParams() {
-      return {
-        team_id: team_id,
-      };
-    },
+  const response = await api.post("/forms", {
+    team_id: team_id,
+    title: "Untitled Form",
+    is_published: false,
   });
-
-  await form.fetch();
-  return form.data;
+  return response.data;
 };
 
 export const validateFormRoute = async (
   curr_form_id: string,
   route: string
 ) => {
-  const route_exists = createResource({
-    url: "frappe.client.get_count",
-    makeParams() {
-      return {
-        doctype: "Form",
-        filters: {
-          name: ["!=", curr_form_id],
-          route: route,
-        },
-      };
-    },
+  const response = await api.get(`/forms/validate-route/${route}`, {
+    params: { exclude_id: curr_form_id },
   });
-
-  await route_exists.fetch();
-  return route_exists.data > 0;
+  return response.data.exists;
 };
+
