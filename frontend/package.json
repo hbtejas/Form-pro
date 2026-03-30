@@ -5,24 +5,26 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/assets/forms_pro/frontend/ && yarn copy-html-entry",
+    "build": "vite build",
     "preview": "vite preview",
-    "lint": "biome check --write .",
-    "typecheck": "./typecheck.sh",
-    "copy-html-entry": "cp ../forms_pro/public/frontend/index.html ../forms_pro/www/forms.html"
+    "lint": "eslint ."
   },
+
   "dependencies": {
     "@lottiefiles/dotlottie-vue": "^0.10.4",
+    "@tanstack/vue-query": "^5.95.2",
     "@vueuse/core": "^13.9.0",
+    "axios": "^1.14.0",
     "dayjs": "^1.11.19",
     "feather-icons": "^4.29.2",
     "frappe-ui": "^0.1.262",
     "lucide-vue-next": "^0.575.0",
-    "pinia": "^3.0.3",
+    "pinia": "^3.0.4",
+    "pins": "^0.1.0",
     "socket.io-client": "^4.7.2",
     "vue": "^3.5.13",
     "vue-advanced-cropper": "^2.6.2",
-    "vue-router": "^4.5.0",
+    "vue-router": "^4.6.4",
     "vue-sonner": "^2.0.9",
     "vuedraggable": "^4.1.0",
     "zod": "^4.1.12"
