@@ -1,43 +1,44 @@
 <script setup lang="ts">
-import { Button, ErrorMessage } from "@/components/ui";
-import FileUploader from "@/components/ui/FileUploader.vue";
-import { ref } from "vue";
-import { Trash } from "lucide-vue-next";
+import { Button, ErrorMessage } from "@/components/ui"
+import FileUploader from "@/components/ui/FileUploader.vue"
+import { Trash } from "lucide-vue-next"
+import { ref } from "vue"
 
 const props = defineProps({
-    field: {
-        type: Object,
-        required: true,
-    },
-});
+	field: {
+		type: Object,
+		required: true,
+	},
+})
 
-const emit = defineEmits(["update:value"]);
-const value = defineModel<string>();
+const emit = defineEmits(["update:value"])
+const value = defineModel<string>()
 
-const inPreview = ref(false);
+const inPreview = ref(false)
 
-const fileData = ref<any>(null);
+const fileData = ref<any>(null)
 
 const formatFileSize = (fileSize: number) => {
-    if (fileSize < 1024) return `${fileSize} B`;
-    if (fileSize < 1024 * 1024) return `${(fileSize / 1024).toFixed(2)} KB`;
-    if (fileSize < 1024 * 1024 * 1024) return `${(fileSize / 1024 / 1024).toFixed(2)} MB`;
-    return `${(fileSize / 1024 / 1024 / 1024).toFixed(2)} GB`;
-};
+	if (fileSize < 1024) return `${fileSize} B`
+	if (fileSize < 1024 * 1024) return `${(fileSize / 1024).toFixed(2)} KB`
+	if (fileSize < 1024 * 1024 * 1024)
+		return `${(fileSize / 1024 / 1024).toFixed(2)} MB`
+	return `${(fileSize / 1024 / 1024 / 1024).toFixed(2)} GB`
+}
 
 const handleChange = (file: any) => {
-    fileData.value = file;
-    if (file.file_url) {
-        emit("update:value", file.file_url);
-    }
-    inPreview.value = true;
-};
+	fileData.value = file
+	if (file.file_url) {
+		emit("update:value", file.file_url)
+	}
+	inPreview.value = true
+}
 
 const handleRemove = () => {
-    fileData.value = null;
-    emit("update:value", "");
-    inPreview.value = false;
-};
+	fileData.value = null
+	emit("update:value", "")
+	inPreview.value = false
+}
 </script>
 <template>
     <div class="flex gap-2 flex-col mt-2">

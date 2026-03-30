@@ -1,14 +1,14 @@
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import isToday from "dayjs/plugin/isToday";
-import isYesterday from "dayjs/plugin/isYesterday";
-import customParseFormat from "dayjs/plugin/customParseFormat";
+import dayjs from "dayjs"
+import customParseFormat from "dayjs/plugin/customParseFormat"
+import isToday from "dayjs/plugin/isToday"
+import isYesterday from "dayjs/plugin/isYesterday"
+import relativeTime from "dayjs/plugin/relativeTime"
 
 // Extend dayjs with plugins
-dayjs.extend(relativeTime);
-dayjs.extend(isToday);
-dayjs.extend(isYesterday);
-dayjs.extend(customParseFormat);
+dayjs.extend(relativeTime)
+dayjs.extend(isToday)
+dayjs.extend(isYesterday)
+dayjs.extend(customParseFormat)
 
 /**
  * Format a date string or Date object to a readable date format
@@ -17,11 +17,11 @@ dayjs.extend(customParseFormat);
  * @returns Formatted date string
  */
 export function formatDate(
-  date: string | Date | dayjs.Dayjs | null | undefined,
-  format: string = "MMM D, YYYY"
+	date: string | Date | dayjs.Dayjs | null | undefined,
+	format = "MMM D, YYYY",
 ): string {
-  if (!date) return "";
-  return dayjs(date).format(format);
+	if (!date) return ""
+	return dayjs(date).format(format)
 }
 
 /**
@@ -31,11 +31,11 @@ export function formatDate(
  * @returns Formatted datetime string
  */
 export function formatDateTime(
-  date: string | Date | dayjs.Dayjs | null | undefined,
-  format: string = "MMM D, YYYY h:mm A"
+	date: string | Date | dayjs.Dayjs | null | undefined,
+	format = "MMM D, YYYY h:mm A",
 ): string {
-  if (!date) return "";
-  return dayjs(date).format(format);
+	if (!date) return ""
+	return dayjs(date).format(format)
 }
 
 /**
@@ -45,31 +45,31 @@ export function formatDateTime(
  * @returns Pretty formatted date string
  */
 export function formatPrettyDate(
-  date: string | Date | dayjs.Dayjs | null | undefined
+	date: string | Date | dayjs.Dayjs | null | undefined,
 ): string {
-  if (!date) return "";
+	if (!date) return ""
 
-  const dayjsDate = dayjs(date);
-  const now = dayjs();
-  const diffInDays = now.diff(dayjsDate, "day");
+	const dayjsDate = dayjs(date)
+	const now = dayjs()
+	const diffInDays = now.diff(dayjsDate, "day")
 
-  if (dayjsDate.isToday()) {
-    return "Today";
-  }
+	if (dayjsDate.isToday()) {
+		return "Today"
+	}
 
-  if (dayjsDate.isYesterday()) {
-    return "Yesterday";
-  }
+	if (dayjsDate.isYesterday()) {
+		return "Yesterday"
+	}
 
-  if (diffInDays < 7) {
-    return dayjsDate.fromNow();
-  }
+	if (diffInDays < 7) {
+		return dayjsDate.fromNow()
+	}
 
-  if (diffInDays < 365) {
-    return dayjsDate.format("MMM D");
-  }
+	if (diffInDays < 365) {
+		return dayjsDate.format("MMM D")
+	}
 
-  return dayjsDate.format("MMM D, YYYY");
+	return dayjsDate.format("MMM D, YYYY")
 }
 
 /**
@@ -79,11 +79,11 @@ export function formatPrettyDate(
  * @returns Formatted time string
  */
 export function formatTime(
-  date: string | Date | dayjs.Dayjs | null | undefined,
-  format: string = "h:mm A"
+	date: string | Date | dayjs.Dayjs | null | undefined,
+	format = "h:mm A",
 ): string {
-  if (!date) return "";
-  return dayjs(date).format(format);
+	if (!date) return ""
+	return dayjs(date).format(format)
 }
 
 /**
@@ -92,10 +92,10 @@ export function formatTime(
  * @returns Relative time string
  */
 export function getRelativeTime(
-  date: string | Date | dayjs.Dayjs | null | undefined
+	date: string | Date | dayjs.Dayjs | null | undefined,
 ): string {
-  if (!date) return "";
-  return dayjs(date).fromNow();
+	if (!date) return ""
+	return dayjs(date).fromNow()
 }
 
 /**
@@ -104,10 +104,10 @@ export function getRelativeTime(
  * @returns True if the date is today
  */
 export function isDateToday(
-  date: string | Date | dayjs.Dayjs | null | undefined
+	date: string | Date | dayjs.Dayjs | null | undefined,
 ): boolean {
-  if (!date) return false;
-  return dayjs(date).isToday();
+	if (!date) return false
+	return dayjs(date).isToday()
 }
 
 /**
@@ -116,10 +116,10 @@ export function isDateToday(
  * @returns True if the date is in the past
  */
 export function isDatePast(
-  date: string | Date | dayjs.Dayjs | null | undefined
+	date: string | Date | dayjs.Dayjs | null | undefined,
 ): boolean {
-  if (!date) return false;
-  return dayjs(date).isBefore(dayjs());
+	if (!date) return false
+	return dayjs(date).isBefore(dayjs())
 }
 
 /**
@@ -128,10 +128,10 @@ export function isDatePast(
  * @returns True if the date is in the future
  */
 export function isDateFuture(
-  date: string | Date | dayjs.Dayjs | null | undefined
+	date: string | Date | dayjs.Dayjs | null | undefined,
 ): boolean {
-  if (!date) return false;
-  return dayjs(date).isAfter(dayjs());
+	if (!date) return false
+	return dayjs(date).isAfter(dayjs())
 }
 
 /**
@@ -142,12 +142,12 @@ export function isDateFuture(
  * @returns Difference in the specified unit
  */
 export function getDateDiff(
-  date1: string | Date | dayjs.Dayjs | null | undefined,
-  date2: string | Date | dayjs.Dayjs | null | undefined = dayjs(),
-  unit: dayjs.ManipulateType = "day"
+	date1: string | Date | dayjs.Dayjs | null | undefined,
+	date2: string | Date | dayjs.Dayjs | null | undefined = dayjs(),
+	unit: dayjs.ManipulateType = "day",
 ): number {
-  if (!date1) return 0;
-  return dayjs(date1).diff(dayjs(date2), unit);
+	if (!date1) return 0
+	return dayjs(date1).diff(dayjs(date2), unit)
 }
 
 /**
@@ -156,10 +156,10 @@ export function getDateDiff(
  * @returns Short formatted date string
  */
 export function formatShortDate(
-  date: string | Date | dayjs.Dayjs | null | undefined
+	date: string | Date | dayjs.Dayjs | null | undefined,
 ): string {
-  if (!date) return "";
-  return dayjs(date).format("M/D/YYYY");
+	if (!date) return ""
+	return dayjs(date).format("M/D/YYYY")
 }
 
 /**
@@ -168,8 +168,8 @@ export function formatShortDate(
  * @returns ISO formatted date string
  */
 export function formatISODate(
-  date: string | Date | dayjs.Dayjs | null | undefined
+	date: string | Date | dayjs.Dayjs | null | undefined,
 ): string {
-  if (!date) return "";
-  return dayjs(date).format("YYYY-MM-DD");
+	if (!date) return ""
+	return dayjs(date).format("YYYY-MM-DD")
 }

@@ -1,25 +1,34 @@
 <script setup lang="ts">
-import { Badge, Popover, Tooltip, Button } from "@/components/ui";
-import { ChevronDown, CloudCheck, ExternalLink, CloudOff, ArrowLeft, Globe } from "lucide-vue-next";
-import { useEditForm } from "@/stores/editForm";
-import { useRouter } from "vue-router";
-import Logo from "@/assets/Logo.vue";
+import Logo from "@/assets/Logo.vue"
+import { Badge, Button, Popover, Tooltip } from "@/components/ui"
+import { useEditForm } from "@/stores/editForm"
+import {
+	ArrowLeft,
+	ChevronDown,
+	CloudCheck,
+	CloudOff,
+	ExternalLink,
+	Globe,
+} from "lucide-vue-next"
+import { useRouter } from "vue-router"
 
-const router = useRouter();
-const editFormStore = useEditForm();
+const router = useRouter()
+const editFormStore = useEditForm()
 
 const openFormSubmissionPage = () => {
-    const route = editFormStore.formData?.route;
-    if (!route) return;
+	const route = editFormStore.formData?.route
+	if (!route) return
 
-    const routeRecord = router.getRoutes().find((r) => r.name === "Form Submission Page");
-    if (!routeRecord) return;
+	const routeRecord = router
+		.getRoutes()
+		.find((r) => r.name === "Form Submission Page")
+	if (!routeRecord) return
 
-    const path = routeRecord.path.replace(":route(.*)", route);
-    const routeData = router.resolve(path);
+	const path = routeRecord.path.replace(":route(.*)", route)
+	const routeData = router.resolve(path)
 
-    window.open(routeData.href, "_blank");
-};
+	window.open(routeData.href, "_blank")
+}
 </script>
 <template>
     <header

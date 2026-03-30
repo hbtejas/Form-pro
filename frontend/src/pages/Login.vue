@@ -1,28 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Button, Input } from '@/components/ui';
-import { session } from '@/data/session';
-import { toast } from 'vue-sonner';
+import { Button, Input } from "@/components/ui"
+import { session } from "@/data/session"
+import { ref } from "vue"
+import { toast } from "vue-sonner"
 
-const email = ref('');
-const password = ref('');
-const loading = ref(false);
+const email = ref("")
+const password = ref("")
+const loading = ref(false)
 
 const handleLogin = async () => {
-    if (!email.value || !password.value) {
-        toast.error('Please enter email and password');
-        return;
-    }
-    loading.value = true;
-    try {
-        await session.login(email.value, password.value);
-    } catch (err) {
-
-        toast.error('Invalid credentials');
-    } finally {
-        loading.value = false;
-    }
-};
+	if (!email.value || !password.value) {
+		toast.error("Please enter email and password")
+		return
+	}
+	loading.value = true
+	try {
+		await session.login(email.value, password.value)
+	} catch (err) {
+		toast.error("Invalid credentials")
+	} finally {
+		loading.value = false
+	}
+}
 </script>
 
 <template>

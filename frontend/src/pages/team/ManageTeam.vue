@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useTeam } from "@/stores/team";
-import TeamMemberList from "@/components/team/TeamMemberList.vue";
-import { Breadcrumbs, LoadingText } from "@/components/ui";
-import ManageTeamHeader from "@/components/team/ManageTeamHeader.vue";
+import ManageTeamHeader from "@/components/team/ManageTeamHeader.vue"
+import TeamMemberList from "@/components/team/TeamMemberList.vue"
+import { Breadcrumbs, LoadingText } from "@/components/ui"
+import { useTeam } from "@/stores/team"
 
-const teamStore = useTeam();
-teamStore.initialize();
+const teamStore = useTeam()
+teamStore.initialize()
 </script>
 <template>
     <div v-if="teamStore.teamMembersResource.loading">

@@ -1,25 +1,28 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { formFields, type FormFields } from "@/utils/form_fields";
-import { Input, Button } from "@/components/ui";
-import { useEditForm } from "@/stores/editForm";
-import RenderField from "@/components/RenderField.vue";
-import type { Component } from "vue";
-import { Plus } from "lucide-vue-next";
+import RenderField from "@/components/RenderField.vue"
+import { Button, Input } from "@/components/ui"
+import { useEditForm } from "@/stores/editForm"
+import { type FormFields, formFields } from "@/utils/form_fields"
+import { Plus } from "lucide-vue-next"
+import { computed, ref } from "vue"
+import type { Component } from "vue"
 
-const search = ref("");
-const componentMap = formFields.reduce((acc: Record<string, Component>, field: FormFields) => {
-    acc[field.name] = field.component;
-    return acc;
-}, {});
+const search = ref("")
+const componentMap = formFields.reduce(
+	(acc: Record<string, Component>, field: FormFields) => {
+		acc[field.name] = field.component
+		return acc
+	},
+	{},
+)
 
 const filteredComponents = computed(() => {
-    return Object.keys(componentMap).filter((component) =>
-        component.toLowerCase().includes(search.value.toLowerCase())
-    );
-});
+	return Object.keys(componentMap).filter((component) =>
+		component.toLowerCase().includes(search.value.toLowerCase()),
+	)
+})
 
-const editFormStore = useEditForm();
+const editFormStore = useEditForm()
 </script>
 <template>
     <div class="space-y-4">

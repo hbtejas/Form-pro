@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import TeamLogo from "@/components/team/TeamLogo.vue";
-import ImageUploader from "@/components/ImageUploader/ImageUploader.vue";
-import { Button, ErrorMessage, Input } from "@/components/ui";
-import { useTeam } from "@/stores/team";
-import { ref, watch } from "vue";
-import { Upload, Edit2, Check, X } from "lucide-vue-next";
+import ImageUploader from "@/components/ImageUploader/ImageUploader.vue"
+import TeamLogo from "@/components/team/TeamLogo.vue"
+import { Button, ErrorMessage, Input } from "@/components/ui"
+import { useTeam } from "@/stores/team"
+import { Check, Edit2, Upload, X } from "lucide-vue-next"
+import { ref, watch } from "vue"
 
-const teamStore = useTeam();
+const teamStore = useTeam()
 
-const teamName = ref(teamStore.currentTeam?.team_name ?? "");
-const isEditing = ref(false);
+const teamName = ref(teamStore.currentTeam?.team_name ?? "")
+const isEditing = ref(false)
 
 watch(
-    () => teamStore.currentTeam?.team_name,
-    (val) => {
-        teamName.value = val ?? "";
-    }
-);
+	() => teamStore.currentTeam?.team_name,
+	(val) => {
+		teamName.value = val ?? ""
+	},
+)
 
 function onSubmit() {
-    const trimmed = teamName.value?.trim();
-    if (!trimmed || trimmed === teamStore.currentTeam?.team_name) {
-        isEditing.value = false;
-        return;
-    }
-    teamStore.save({ team_name: trimmed });
-    isEditing.value = false;
+	const trimmed = teamName.value?.trim()
+	if (!trimmed || trimmed === teamStore.currentTeam?.team_name) {
+		isEditing.value = false
+		return
+	}
+	teamStore.save({ team_name: trimmed })
+	isEditing.value = false
 }
 
 function cancel() {
-    teamName.value = teamStore.currentTeam?.team_name ?? "";
-    isEditing.value = false;
+	teamName.value = teamStore.currentTeam?.team_name ?? ""
+	isEditing.value = false
 }
 </script>
 <template>

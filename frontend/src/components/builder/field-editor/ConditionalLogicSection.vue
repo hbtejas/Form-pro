@@ -1,132 +1,133 @@
 <script setup lang="ts">
-import { useEditForm } from "@/stores/editForm";
-import { ref, watch, computed } from "vue";
+import { Button, Input, Popover, Select } from "@/components/ui"
+import { useEditForm } from "@/stores/editForm"
 import {
-    ConditionalLogic,
-    ConditionalOperators,
-    type Condition,
-    Actions,
-} from "@/types/conditional-render.types";
-import { EllipsisVertical, Trash, Workflow, Zap, Plus } from "lucide-vue-next";
-import { Input, Popover, Select, Button } from "@/components/ui";
-import type { FormField } from "@/types/formfield";
+	Actions,
+	type Condition,
+	type ConditionalLogic,
+	ConditionalOperators,
+} from "@/types/conditional-render.types"
+import type { FormField } from "@/types/formfield"
+import { EllipsisVertical, Plus, Trash, Workflow, Zap } from "lucide-vue-next"
+import { computed, ref, watch } from "vue"
 
+const editFormStore = useEditForm()
 
-const editFormStore = useEditForm();
-
-const conditionalLogic = ref<ConditionalLogic | null>(null);
-const isUpdatingFromStore = ref(false);
+const conditionalLogic = ref<ConditionalLogic | null>(null)
+const isUpdatingFromStore = ref(false)
 
 // Helper function to parse conditional_logic value
 const parseConditionalLogic = (
-    value: string | ConditionalLogic | undefined
+	value: string | ConditionalLogic | undefined,
 ): ConditionalLogic | null => {
-    if (!value) return null;
-    if (typeof value === "string") {
-        try {
-            return JSON.parse(value) as ConditionalLogic;
-        } catch (e) {
-            console.error("Failed to parse conditional_logic:", e);
-            return null;
-        }
-    }
-    return value as ConditionalLogic;
-};
+	if (!value) return null
+	if (typeof value === "string") {
+		try {
+			return JSON.parse(value) as ConditionalLogic
+		} catch (e) {
+			console.error("Failed to parse conditional_logic:", e)
+			return null
+		}
+	}
+	return value as ConditionalLogic
+}
 
 // Helper function to stringify conditionalLogic
-const stringifyConditionalLogic = (value: ConditionalLogic | null): string | undefined => {
-    if (!value) return undefined;
-    return JSON.stringify(value);
-};
+const stringifyConditionalLogic = (
+	value: ConditionalLogic | null,
+): string | undefined => {
+	if (!value) return undefined
+	return JSON.stringify(value)
+}
 
 // Watch for changes in selectedField.conditional_logic from external sources
 watch(
-    () => editFormStore.selectedField?.conditional_logic,
-    (newValue) => {
-        // Prevent infinite loop - don't update if we're the ones updating the store
-        if (isUpdatingFromStore.value) return;
+	() => editFormStore.selectedField?.conditional_logic,
+	(newValue) => {
+		// Prevent infinite loop - don't update if we're the ones updating the store
+		if (isUpdatingFromStore.value) return
 
-        const parsed = parseConditionalLogic(newValue);
-        conditionalLogic.value = parsed;
-    },
-    { immediate: true }
-);
+		const parsed = parseConditionalLogic(newValue)
+		conditionalLogic.value = parsed
+	},
+	{ immediate: true },
+)
 
 // Watch conditionalLogic and update selectedField.conditional_logic whenever it changes
 watch(
-    conditionalLogic,
-    (newValue) => {
-        if (!editFormStore.selectedField) return;
+	conditionalLogic,
+	(newValue) => {
+		if (!editFormStore.selectedField) return
 
-        // Set flag to prevent infinite loop
-        isUpdatingFromStore.value = true;
+		// Set flag to prevent infinite loop
+		isUpdatingFromStore.value = true
 
-        try {
-            if (conditionalLogic.value?.conditions.length === 0) {
-                editFormStore.selectedField.conditional_logic = "";
-            } else {
-                editFormStore.selectedField.conditional_logic =
-                    stringifyConditionalLogic(newValue);
-            }
-        } finally {
-            // Reset flag after a microtask to allow the other watcher to process
-            setTimeout(() => {
-                isUpdatingFromStore.value = false;
-            }, 0);
-        }
-    },
-    { deep: true }
-);
+		try {
+			if (conditionalLogic.value?.conditions.length === 0) {
+				editFormStore.selectedField.conditional_logic = ""
+			} else {
+				editFormStore.selectedField.conditional_logic =
+					stringifyConditionalLogic(newValue)
+			}
+		} finally {
+			// Reset flag after a microtask to allow the other watcher to process
+			setTimeout(() => {
+				isUpdatingFromStore.value = false
+			}, 0)
+		}
+	},
+	{ deep: true },
+)
 
 const addCondition = () => {
-    if (!conditionalLogic.value) {
-        conditionalLogic.value = {
-            conditions: [],
-            action: Actions.ShowField,
-            target_field: null,
-        } as ConditionalLogic;
-    }
+	if (!conditionalLogic.value) {
+		conditionalLogic.value = {
+			conditions: [],
+			action: Actions.ShowField,
+			target_field: null,
+		} as ConditionalLogic
+	}
 
-    conditionalLogic.value.conditions.push({
-        fieldname: "",
-        operator: ConditionalOperators.Is,
-        value: "",
-    } as Condition);
-};
+	conditionalLogic.value.conditions.push({
+		fieldname: "",
+		operator: ConditionalOperators.Is,
+		value: "",
+	} as Condition)
+}
 
 const removeCondition = (index: number) => {
-    if (!conditionalLogic.value) return;
-    conditionalLogic.value.conditions.splice(index, 1);
-};
+	if (!conditionalLogic.value) return
+	conditionalLogic.value.conditions.splice(index, 1)
+}
 
 const availableFieldOptions = computed(() => {
-    return editFormStore.fields.map((field: FormField) => ({
-        label: field.label,
-        value: field.fieldname,
-    }));
-});
+	return editFormStore.fields.map((field: FormField) => ({
+		label: field.label,
+		value: field.fieldname,
+	}))
+})
 
 const operatorOptions = computed(() => {
-    return Object.values(ConditionalOperators).map((operator) => ({
-        label: operator,
-        value: operator,
-    }));
-});
+	return Object.values(ConditionalOperators).map((operator) => ({
+		label: operator,
+		value: operator,
+	}))
+})
 
 const actionOptions = computed(() => {
-    return Object.values(Actions).map((action) => ({
-        label: action,
-        value: action,
-    }));
-});
+	return Object.values(Actions).map((action) => ({
+		label: action,
+		value: action,
+	}))
+})
 
 const showValueInput = (operator: ConditionalOperators) => {
-    return (
-        operator !== ConditionalOperators.IsEmpty &&
-        operator !== ConditionalOperators.IsNotEmpty &&
-        operator !== ConditionalOperators.IsSet
-    );
-};
+	return (
+		operator !== ConditionalOperators.IsEmpty &&
+		operator !== ConditionalOperators.IsNotEmpty &&
+		operator !== ConditionalOperators.IsSet
+	)
+}
 </script>
 <template>
     <div class="flex flex-col gap-2">

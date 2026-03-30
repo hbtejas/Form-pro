@@ -1,54 +1,52 @@
 <script setup lang="ts">
-import PageHeader from "@/components/submission/PageHeader.vue";
-import { Alert, Badge, LoadingText, Button } from "@/components/ui";
-import { useRoute } from "vue-router";
-import { useSubmissionForm } from "@/stores/submissionForm";
-import { useEditSubmission } from "@/stores/editSubmission";
-import { computed, watch } from "vue";
-import FormRenderer from "@/components/submission/FormRenderer.vue";
-import { CircleDashed } from "lucide-vue-next";
-import { formatDateTime } from "@/utils/date";
+import FormRenderer from "@/components/submission/FormRenderer.vue"
+import PageHeader from "@/components/submission/PageHeader.vue"
+import { Alert, Badge, Button, LoadingText } from "@/components/ui"
+import { useEditSubmission } from "@/stores/editSubmission"
+import { useSubmissionForm } from "@/stores/submissionForm"
+import { formatDateTime } from "@/utils/date"
+import { CircleDashed } from "lucide-vue-next"
+import { computed, watch } from "vue"
+import { useRoute } from "vue-router"
 
-const route = useRoute();
-const submissionFormStore = useSubmissionForm();
-const editSubmissionStore = useEditSubmission();
+const route = useRoute()
+const submissionFormStore = useSubmissionForm()
+const editSubmissionStore = useEditSubmission()
 
-submissionFormStore.initialize(route.params.route as string);
+submissionFormStore.initialize(route.params.route as string)
 watch(
-    () => submissionFormStore.currentForm,
-    () => {
-        if (submissionFormStore.currentForm) {
-            editSubmissionStore.initialize(
-                route.params.submissionId as string
-            );
-        }
-    },
-    { immediate: true }
-);
+	() => submissionFormStore.currentForm,
+	() => {
+		if (submissionFormStore.currentForm) {
+			editSubmissionStore.initialize(route.params.submissionId as string)
+		}
+	},
+	{ immediate: true },
+)
 
 watch(
-    () => editSubmissionStore.submission,
-    () => {
-        if (editSubmissionStore.submission) {
-            const submissionData = editSubmissionStore.submission.data || {};
-            Object.keys(submissionFormStore.fields).forEach((key) => {
-                const matchingField = submissionData[key];
-                if (matchingField !== undefined) {
-                    submissionFormStore.fields[key] = matchingField;
-                }
-            });
-        }
-    },
-    { immediate: true }
-);
+	() => editSubmissionStore.submission,
+	() => {
+		if (editSubmissionStore.submission) {
+			const submissionData = editSubmissionStore.submission.data || {}
+			for (const key of Object.keys(submissionFormStore.fields)) {
+				const matchingField = submissionData[key]
+				if (matchingField !== undefined) {
+					submissionFormStore.fields[key] = matchingField
+				}
+			}
+		}
+	},
+	{ immediate: true },
+)
 
 const isDirty = computed(() => {
-    if (!editSubmissionStore.submission) return false;
-    const submissionData = editSubmissionStore.submission.data || {};
-    return Object.keys(submissionFormStore.fields).some((key) => {
-        return submissionFormStore.fields[key] !== submissionData[key];
-    });
-});
+	if (!editSubmissionStore.submission) return false
+	const submissionData = editSubmissionStore.submission.data || {}
+	return Object.keys(submissionFormStore.fields).some((key) => {
+		return submissionFormStore.fields[key] !== submissionData[key]
+	})
+})
 </script>
 <template>
     <LoadingText v-if="editSubmissionStore.isLoading" class="mx-auto my-auto w-5 h-5" />

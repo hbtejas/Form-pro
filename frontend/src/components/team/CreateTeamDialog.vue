@@ -1,65 +1,69 @@
 <script setup lang="ts">
-import { Dialog, ErrorMessage, Button, Input } from "@/components/ui";
-import * as z from "zod";
-import { reactive, ref, watch } from "vue";
-import { useUser } from "@/stores/user";
-import TeamLogo from "@/components/team/TeamLogo.vue";
-import ImageUploader from "@/components/ImageUploader/ImageUploader.vue";
-import { X, Upload, Plus } from "lucide-vue-next";
+import ImageUploader from "@/components/ImageUploader/ImageUploader.vue"
+import TeamLogo from "@/components/team/TeamLogo.vue"
+import { Button, Dialog, ErrorMessage, Input } from "@/components/ui"
+import { useUser } from "@/stores/user"
+import { Plus, Upload, X } from "lucide-vue-next"
+import { reactive, ref, watch } from "vue"
+import * as z from "zod"
 
-const user = useUser();
+const user = useUser()
 const model = defineModel<boolean>({
-    type: Boolean,
-    required: true,
-});
+	type: Boolean,
+	required: true,
+})
 
-const formErrors = ref<string>("");
+const formErrors = ref<string>("")
 
 const formSchema = z.object({
-    team_name: z
-        .string()
-        .min(2, "Team name must be at least 2 characters long")
-        .max(140, "Team name must be less than 140 characters long"),
-    logo_url: z.string().optional(),
-});
+	team_name: z
+		.string()
+		.min(2, "Team name must be at least 2 characters long")
+		.max(140, "Team name must be less than 140 characters long"),
+	logo_url: z.string().optional(),
+})
 
-type Form = z.infer<typeof formSchema>;
+type Form = z.infer<typeof formSchema>
 
 const form = reactive<Form>({
-    team_name: "",
-    logo_url: undefined,
-});
+	team_name: "",
+	logo_url: undefined,
+})
 
 watch(
-    () => form,
-    (newVal) => {
-        const result = formSchema.safeParse(newVal);
-        if (!result.success) {
-            formErrors.value = result.error.issues.map((issue) => issue.message).join(", ");
-        } else {
-            formErrors.value = "";
-        }
-    },
-    { deep: true }
-);
+	() => form,
+	(newVal) => {
+		const result = formSchema.safeParse(newVal)
+		if (!result.success) {
+			formErrors.value = result.error.issues
+				.map((issue) => issue.message)
+				.join(", ")
+		} else {
+			formErrors.value = ""
+		}
+	},
+	{ deep: true },
+)
 
 function createTeam() {
-    const result = formSchema.safeParse(form);
-    if (!result.success) {
-        formErrors.value = result.error.issues.map((issue) => issue.message).join(", ");
-        return;
-    }
-    formErrors.value = "";
-    user.createTeam(form.team_name, form.logo_url);
-    model.value = false;
+	const result = formSchema.safeParse(form)
+	if (!result.success) {
+		formErrors.value = result.error.issues
+			.map((issue) => issue.message)
+			.join(", ")
+		return
+	}
+	formErrors.value = ""
+	user.createTeam(form.team_name, form.logo_url)
+	model.value = false
 }
 
 function setTeamLogo(file: any) {
-    form.logo_url = file.file_url;
+	form.logo_url = file.file_url
 }
 
 function removeTeamLogo() {
-    form.logo_url = undefined;
+	form.logo_url = undefined
 }
 </script>
 <template>

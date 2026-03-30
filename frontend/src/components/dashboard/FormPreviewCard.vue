@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { Badge } from "@/components/ui";
-import { FileText } from "lucide-vue-next";
-import { computed } from "vue";
+import { Badge } from "@/components/ui"
+import { FileText } from "lucide-vue-next"
+import { computed } from "vue"
 
 const props = defineProps({
-    form: {
-        type: Object,
-        required: true,
-    },
-});
+	form: {
+		type: Object,
+		required: true,
+	},
+})
 
 const formattedDate = computed(() => {
-    return new Date(props.form.createdAt || props.form.creation).toLocaleDateString();
-});
+	return new Date(
+		props.form.createdAt || props.form.creation,
+	).toLocaleDateString()
+})
 </script>
 <template>
     <div

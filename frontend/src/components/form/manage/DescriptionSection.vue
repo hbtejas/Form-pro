@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useManageForm } from "@/stores/form/manageForm";
+import { useManageForm } from "@/stores/form/manageForm"
 
-const manageFormStore = useManageForm();
+const manageFormStore = useManageForm()
 </script>
 <template>
     <p class="prose-sm text-ink-gray-5" v-if="!manageFormStore.formData?.description">

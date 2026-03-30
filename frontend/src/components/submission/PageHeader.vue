@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { Button, Popover } from "@/components/ui";
-import { session } from "@/data/session";
-import { useRoute } from "vue-router";
-import Avatar from "../ui/Avatar.vue";
-import { ref, onMounted } from "vue";
-import api from "@/utils/api";
-import { LogOut } from "lucide-vue-next";
+import { Button, Popover } from "@/components/ui"
+import { session } from "@/data/session"
+import api from "@/utils/api"
+import { LogOut } from "lucide-vue-next"
+import { onMounted, ref } from "vue"
+import { useRoute } from "vue-router"
+import Avatar from "../ui/Avatar.vue"
 
-const route = useRoute();
-const brandLogo = ref<string | null>(null);
-const websiteSettings = ref<any>(null);
+const route = useRoute()
+const brandLogo = ref<string | null>(null)
+const websiteSettings = ref<any>(null)
 
 async function fetchData() {
-    try {
-        const logoResp = await api.get("/settings/brand-logo");
-        brandLogo.value = logoResp.data;
-        const settingsResp = await api.get("/settings/website-settings");
-        websiteSettings.value = settingsResp.data;
-    } catch (err) {
-        // Fallback
-    }
+	try {
+		const logoResp = await api.get("/settings/brand-logo")
+		brandLogo.value = logoResp.data
+		const settingsResp = await api.get("/settings/website-settings")
+		websiteSettings.value = settingsResp.data
+	} catch (err) {
+		// Fallback
+	}
 }
 
-onMounted(fetchData);
+onMounted(fetchData)
 
 function redirectToLogin() {
-    window.location.href = `/login?redirect-to=${route.fullPath}`;
+	window.location.href = `/login?redirect-to=${route.fullPath}`
 }
 </script>
 <template>

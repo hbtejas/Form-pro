@@ -33,7 +33,18 @@ const FormSchema = new mongoose.Schema({
   fields: [FormFieldSchema],
   metadata: { type: mongoose.Schema.Types.Mixed },
   owner: { type: String, required: true }, // Map to User ID
-  team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
+  team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
+  shared_access: [
+    {
+      email: { type: String, required: true },
+      full_name: { type: String, default: '' },
+      user_image: { type: String, default: null },
+      read: { type: Boolean, default: true },
+      write: { type: Boolean, default: true },
+      share: { type: Boolean, default: false },
+      submit: { type: Boolean, default: true }
+    }
+  ]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Form', FormSchema);

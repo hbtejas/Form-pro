@@ -1,25 +1,29 @@
 <script setup lang="ts">
-import { useManageForm } from "@/stores/form/manageForm";
-import { ref } from "vue";
-import { Button, Checkbox } from "@/components/ui";
-import Avatar from "@/components/ui/Avatar.vue";
-import type { PermissionTypes } from "@/stores/form/manageForm";
-import ShareAccessModal from "./ShareAccessModal.vue";
-import RemoveAccessModal from "./RemoveAccessModal.vue";
-import { Plus, Trash, ShieldCheck } from "lucide-vue-next";
+import { Button, Checkbox } from "@/components/ui"
+import Avatar from "@/components/ui/Avatar.vue"
+import { useManageForm } from "@/stores/form/manageForm"
+import type { PermissionTypes } from "@/stores/form/manageForm"
+import { Plus, ShieldCheck, Trash } from "lucide-vue-next"
+import { ref } from "vue"
+import RemoveAccessModal from "./RemoveAccessModal.vue"
+import ShareAccessModal from "./ShareAccessModal.vue"
 
-const manageFormStore = useManageForm();
-const openModal = ref(false);
-const openRemoveAccessModal = ref(false);
-const selectedUserToRemove = ref<string | null>(null);
+const manageFormStore = useManageForm()
+const openModal = ref(false)
+const openRemoveAccessModal = ref(false)
+const selectedUserToRemove = ref<string | null>(null)
 
 function showRemoveAccessModal(email: string) {
-    selectedUserToRemove.value = email;
-    openRemoveAccessModal.value = true;
+	selectedUserToRemove.value = email
+	openRemoveAccessModal.value = true
 }
 
-function setPermission(email: string, permission: PermissionTypes, value: boolean) {
-    manageFormStore.setPermission(email, permission, value);
+function setPermission(
+	email: string,
+	permission: PermissionTypes,
+	value: boolean,
+) {
+	manageFormStore.setPermission(email, permission, value)
 }
 </script>
 <template>

@@ -1,61 +1,61 @@
 <script setup lang="ts">
-import { Button, Dialog, Checkbox } from "@/components/ui";
-import { useTeam, type TeamMember } from "@/stores/team";
-import { useManageForm, type SharedAccessUser } from "@/stores/form/manageForm";
-import { computed, ref } from "vue";
-import Avatar from "@/components/ui/Avatar.vue";
-import { toast } from "vue-sonner";
-import { Users, UserPlus, Check } from "lucide-vue-next";
+import { Button, Checkbox, Dialog } from "@/components/ui"
+import Avatar from "@/components/ui/Avatar.vue"
+import { type SharedAccessUser, useManageForm } from "@/stores/form/manageForm"
+import { type TeamMember, useTeam } from "@/stores/team"
+import { Check, UserPlus, Users } from "lucide-vue-next"
+import { computed, ref } from "vue"
+import { toast } from "vue-sonner"
 
-const teamStore = useTeam();
-const manageFormStore = useManageForm();
+const teamStore = useTeam()
+const manageFormStore = useManageForm()
 
-const open = defineModel<boolean>({ required: true, default: false });
+const open = defineModel<boolean>({ required: true, default: false })
 
-const sharedAccessUsers = computed(() => manageFormStore.sharedAccessUsers);
+const sharedAccessUsers = computed(() => manageFormStore.sharedAccessUsers)
 
 const teamMembersNotSharedWith = computed(() => {
-    return teamStore.teamMembers.filter((member: TeamMember) => {
-        return !sharedAccessUsers.value.some(
-            (user: SharedAccessUser) => user.email === member.email
-        );
-    });
-});
+	return teamStore.teamMembers.filter((member: TeamMember) => {
+		return !sharedAccessUsers.value.some(
+			(user: SharedAccessUser) => user.email === member.email,
+		)
+	})
+})
 
-const selectedUsers = ref<string[]>([]);
+const selectedUsers = ref<string[]>([])
 
 const DEFAULT_ACCESS_PERMISSIONS = {
-    read: true,
-    write: true,
-    share: true,
-    submit: false,
-} as const;
+	read: true,
+	write: true,
+	share: true,
+	submit: false,
+} as const
 
 const giveAccessToUsers = async () => {
-    if (selectedUsers.value.length === 0) return;
-    for (const user of selectedUsers.value) {
-        await manageFormStore.addAccess(user, DEFAULT_ACCESS_PERMISSIONS);
-    }
-    toast.success("Access given to users successfully");
-    selectedUsers.value = [];
-    open.value = false;
-};
+	if (selectedUsers.value.length === 0) return
+	for (const user of selectedUsers.value) {
+		await manageFormStore.addAccess(user, DEFAULT_ACCESS_PERMISSIONS)
+	}
+	toast.success("Access given to users successfully")
+	selectedUsers.value = []
+	open.value = false
+}
 
 const giveAccessToAllTeamMembers = async () => {
-    for (const member of teamMembersNotSharedWith.value) {
-        await manageFormStore.addAccess(member.email, DEFAULT_ACCESS_PERMISSIONS);
-    }
-    toast.success("Access given to all team members successfully");
-    selectedUsers.value = [];
-    open.value = false;
-};
+	for (const member of teamMembersNotSharedWith.value) {
+		await manageFormStore.addAccess(member.email, DEFAULT_ACCESS_PERMISSIONS)
+	}
+	toast.success("Access given to all team members successfully")
+	selectedUsers.value = []
+	open.value = false
+}
 
 function toggleUser(email: string) {
-    if (selectedUsers.value.includes(email)) {
-        selectedUsers.value = selectedUsers.value.filter(e => e !== email);
-    } else {
-        selectedUsers.value.push(email);
-    }
+	if (selectedUsers.value.includes(email)) {
+		selectedUsers.value = selectedUsers.value.filter((e) => e !== email)
+	} else {
+		selectedUsers.value.push(email)
+	}
 }
 </script>
 <template>

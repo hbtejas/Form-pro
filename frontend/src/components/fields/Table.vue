@@ -1,63 +1,67 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui";
-import { computed, ref, onMounted } from "vue";
-import FieldRenderer from "../builder/FieldRenderer.vue";
-import { mapDoctypeFieldForForm } from "@/utils/form_fields";
-import api from "@/utils/api";
-import { X } from "lucide-vue-next";
+import { Button } from "@/components/ui"
+import api from "@/utils/api"
+import { mapDoctypeFieldForForm } from "@/utils/form_fields"
+import { X } from "lucide-vue-next"
+import { computed, onMounted, ref } from "vue"
+import FieldRenderer from "../builder/FieldRenderer.vue"
 
 type Row = {
-    [key: string]: any;
-};
-
-const rows = defineModel<Row[]>({ default: [] });
-
-type Props = {
-    inEditMode: boolean;
-    doctype: string;
-};
-
-const props = defineProps<Props>();
-
-const columnsData = ref<any[]>([]);
-
-async function fetchColumns() {
-    if (!props.doctype) return;
-    try {
-        const resp = await api.get("/doctypes/fields", { params: { doctype: props.doctype } });
-        columnsData.value = resp.data;
-    } catch (err) {
-        columnsData.value = [];
-    }
+	[key: string]: any
 }
 
-onMounted(fetchColumns);
+const rows = defineModel<Row[]>({ default: [] })
+
+type Props = {
+	inEditMode: boolean
+	doctype: string
+}
+
+const props = defineProps<Props>()
+
+const columnsData = ref<any[]>([])
+
+async function fetchColumns() {
+	if (!props.doctype) return
+	try {
+		const resp = await api.get("/doctypes/fields", {
+			params: { doctype: props.doctype },
+		})
+		columnsData.value = resp.data
+	} catch (err) {
+		columnsData.value = []
+	}
+}
+
+onMounted(fetchColumns)
 
 const columns = computed(() => {
-    return columnsData.value.map((column: any) => ({
-        label: column.label,
-        key: column.fieldname,
-        ...column,
-        fieldtype: mapDoctypeFieldForForm(column.fieldtype) ?? "Data",
-    }));
-});
+	return columnsData.value.map((column: any) => ({
+		label: column.label,
+		key: column.fieldname,
+		...column,
+		fieldtype: mapDoctypeFieldForForm(column.fieldtype) ?? "Data",
+	}))
+})
 
 function addRow() {
-    const newRow = columns.value.reduce((acc, column) => {
-        acc[column.key] = null;
-        return acc;
-    }, {} as Row);
-    rows.value = [...(rows.value ?? []), newRow];
+	const newRow = columns.value.reduce((acc, column) => {
+		acc[column.key] = null
+		return acc
+	}, {} as Row)
+	rows.value = [...(rows.value ?? []), newRow]
 }
 
 function removeRow(index: number) {
-    rows.value = rows.value?.filter((_, i) => i !== index) ?? [];
+	rows.value = rows.value?.filter((_, i) => i !== index) ?? []
 }
 
 function updateCell(rowIndex: number, key: string, value: unknown) {
-    const list = rows.value ?? [];
-    if (rowIndex < 0 || rowIndex >= list.length) return;
-    rows.value = list.map((row, i) => (i === rowIndex ? { ...row, [key]: value } : row));
+	const list = rows.value ?? []
+	if (rowIndex < 0 || rowIndex >= list.length) return
+	rows.value = list.map((row, i) =>
+		i === rowIndex ? { ...row, [key]: value } : row,
+	)
 }
 </script>
 <template>

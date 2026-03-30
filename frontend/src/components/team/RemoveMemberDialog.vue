@@ -1,22 +1,25 @@
 <script setup lang="ts">
-import { Dialog, Button } from "@/components/ui";
-import { useTeam } from "@/stores/team";
-import type { TeamMember } from "@/stores/team";
-import { toast } from "vue-sonner";
-import { AlertTriangle } from "lucide-vue-next";
+import { Button, Dialog } from "@/components/ui"
+import { useTeam } from "@/stores/team"
+import type { TeamMember } from "@/stores/team"
+import { AlertTriangle } from "lucide-vue-next"
+import { toast } from "vue-sonner"
 
-const teamStore = useTeam();
-const open = defineModel<boolean>({ required: true, default: false });
-const member = defineModel<TeamMember | null>("member", { required: true, default: null });
+const teamStore = useTeam()
+const open = defineModel<boolean>({ required: true, default: false })
+const member = defineModel<TeamMember | null>("member", {
+	required: true,
+	default: null,
+})
 
 function removeMember() {
-    if (!member.value) {
-        toast.error("No member selected");
-        return;
-    }
-    teamStore.removeMemberFromTeam(member.value.email);
-    member.value = null;
-    open.value = false;
+	if (!member.value) {
+		toast.error("No member selected")
+		return
+	}
+	teamStore.removeMemberFromTeam(member.value.email)
+	member.value = null
+	open.value = false
 }
 </script>
 <template>

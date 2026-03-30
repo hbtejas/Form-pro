@@ -1,33 +1,36 @@
 <script setup lang="ts">
-import { ErrorMessage, LoadingIndicator, Button } from "@/components/ui";
-import { useSubmissionForm } from "@/stores/submissionForm";
-import FieldRenderer from "@/components/builder/FieldRenderer.vue";
-import { computed } from "vue";
-import { shouldFieldBeVisible, shouldFieldBeRequired } from "@/utils/conditionals";
-import type { FormField } from "@/types/formfield";
+import FieldRenderer from "@/components/builder/FieldRenderer.vue"
+import { Button, ErrorMessage, LoadingIndicator } from "@/components/ui"
+import { useSubmissionForm } from "@/stores/submissionForm"
+import type { FormField } from "@/types/formfield"
+import {
+	shouldFieldBeRequired,
+	shouldFieldBeVisible,
+} from "@/utils/conditionals"
+import { computed } from "vue"
 
-const submissionFormStore = useSubmissionForm();
+const submissionFormStore = useSubmissionForm()
 
 const props = withDefaults(
-    defineProps<{
-        disabled: boolean;
-    }>(),
-    {
-        disabled: false,
-    }
-);
+	defineProps<{
+		disabled: boolean
+	}>(),
+	{
+		disabled: false,
+	},
+)
 
 // Computed property to get visible fields based on conditional logic
 // This will automatically update when form values change
 const visibleFields = computed(() => {
-    const fields = submissionFormStore.currentForm?.fields || [];
-    return fields.filter((field: FormField) =>
-        shouldFieldBeVisible(field, submissionFormStore.fields, fields)
-    );
-});
+	const fields = submissionFormStore.currentForm?.fields || []
+	return fields.filter((field: FormField) =>
+		shouldFieldBeVisible(field, submissionFormStore.fields, fields),
+	)
+})
 
 function handleSubmitForm() {
-    submissionFormStore.submitForm();
+	submissionFormStore.submitForm()
 }
 </script>
 <template>

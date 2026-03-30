@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { Settings, Plus, StretchHorizontal } from "lucide-vue-next";
-import { ref, markRaw } from "vue";
-import { Tooltip, Button } from "@/components/ui";
-import AddFieldsSection from "@/components/builder/sidebar/AddFieldsSection.vue";
-import SettingsSection from "@/components/builder/sidebar/SettingsSection.vue";
-import DocTypeFieldsSection from "@/components/builder/sidebar/DoctypeFieldsSection.vue";
+import AddFieldsSection from "@/components/builder/sidebar/AddFieldsSection.vue"
+import DocTypeFieldsSection from "@/components/builder/sidebar/DoctypeFieldsSection.vue"
+import SettingsSection from "@/components/builder/sidebar/SettingsSection.vue"
+import { Button, Tooltip } from "@/components/ui"
+import { Plus, Settings, StretchHorizontal } from "lucide-vue-next"
+import { markRaw, ref } from "vue"
 
 const sidebarSections = ref([
-    {
-        id: 0,
-        label: "Settings",
-        icon: Settings,
-        section: markRaw(SettingsSection),
-    },
-    {
-        id: 1,
-        label: "Add Fields",
-        icon: Plus,
-        section: markRaw(AddFieldsSection),
-    },
-    {
-        id: 2,
-        label: "DocType Fields",
-        icon: StretchHorizontal,
-        section: markRaw(DocTypeFieldsSection),
-    },
-]);
+	{
+		id: 0,
+		label: "Settings",
+		icon: Settings,
+		section: markRaw(SettingsSection),
+	},
+	{
+		id: 1,
+		label: "Add Fields",
+		icon: Plus,
+		section: markRaw(AddFieldsSection),
+	},
+	{
+		id: 2,
+		label: "DocType Fields",
+		icon: StretchHorizontal,
+		section: markRaw(DocTypeFieldsSection),
+	},
+])
 
-const activeSection = ref(sidebarSections.value[1]);
+const activeSection = ref(sidebarSections.value[1])
 </script>
 <template>
     <div

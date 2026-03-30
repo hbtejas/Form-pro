@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { useSubmissionForm } from "@/stores/submissionForm";
-import { Button, Badge } from "@/components/ui";
-import { formatDateTime } from "@/utils/date";
+import { Badge, Button } from "@/components/ui"
+import { useSubmissionForm } from "@/stores/submissionForm"
+import { formatDateTime } from "@/utils/date"
+import { ChevronDown, ChevronUp } from "lucide-vue-next"
 import {
-    AccordionContent,
-    AccordionHeader,
-    AccordionItem,
-    AccordionRoot,
-    AccordionTrigger,
-} from "reka-ui";
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
-import { ChevronUp, ChevronDown } from "lucide-vue-next";
+	AccordionContent,
+	AccordionHeader,
+	AccordionItem,
+	AccordionRoot,
+	AccordionTrigger,
+} from "reka-ui"
+import { computed, ref } from "vue"
+import { useRouter } from "vue-router"
 
-const submissionFormStore = useSubmissionForm();
-const router = useRouter();
-const selectedValue = ref<string | string[] | undefined>("previous-submissions");
-const isOpen = computed(() => !!selectedValue.value);
+const submissionFormStore = useSubmissionForm()
+const router = useRouter()
+const selectedValue = ref<string | string[] | undefined>("previous-submissions")
+const isOpen = computed(() => !!selectedValue.value)
 </script>
 <template>
     <AccordionRoot v-model="selectedValue" class="form-container-simple" :collapsible="true">
