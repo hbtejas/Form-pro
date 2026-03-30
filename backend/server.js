@@ -14,8 +14,13 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/formpro')
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Routes placeholder
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/teams', require('./routes/teams'));
+app.use('/api/user', require('./routes/user'));
 app.use('/api/forms', require('./routes/forms'));
+app.use('/api/files', require('./routes/files'));
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
