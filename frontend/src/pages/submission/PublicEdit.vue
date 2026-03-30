@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PageHeader from "@/components/submission/PageHeader.vue";
-import { Alert, Badge, LoadingText, Button } from "frappe-ui";
+import { Alert, Badge, LoadingText, Button } from "@/components/ui";
 import { useRoute } from "vue-router";
 import { useSubmissionForm } from "@/stores/submissionForm";
 import { useEditSubmission } from "@/stores/editSubmission";
@@ -15,12 +15,11 @@ const editSubmissionStore = useEditSubmission();
 
 submissionFormStore.initialize(route.params.route as string);
 watch(
-    () => submissionFormStore.formResource.data,
+    () => submissionFormStore.currentForm,
     () => {
-        if (submissionFormStore.formResource.data) {
+        if (submissionFormStore.currentForm) {
             editSubmissionStore.initialize(
-                submissionFormStore.formResource.data?.linked_doctype,
-                route.params.submissionName as string
+                route.params.submissionId as string
             );
         }
     },
@@ -31,8 +30,9 @@ watch(
     () => editSubmissionStore.submission,
     () => {
         if (editSubmissionStore.submission) {
+            const submissionData = editSubmissionStore.submission.data || {};
             Object.keys(submissionFormStore.fields).forEach((key) => {
-                const matchingField = editSubmissionStore.submission[key];
+                const matchingField = submissionData[key];
                 if (matchingField !== undefined) {
                     submissionFormStore.fields[key] = matchingField;
                 }
@@ -43,8 +43,10 @@ watch(
 );
 
 const isDirty = computed(() => {
+    if (!editSubmissionStore.submission) return false;
+    const submissionData = editSubmissionStore.submission.data || {};
     return Object.keys(submissionFormStore.fields).some((key) => {
-        return submissionFormStore.fields[key] !== editSubmissionStore.submission[key];
+        return submissionFormStore.fields[key] !== submissionData[key];
     });
 });
 </script>
@@ -56,20 +58,19 @@ const isDirty = computed(() => {
             <div class="mx-auto max-w-screen-md space-y-6">
                 <Button
                     label="Go to Submission Page"
-                    icon-left="arrow-left"
                     variant="ghost"
-                    @click="$router.push(`/p/${submissionFormStore.formResource.data?.route}`)"
+                    @click="$router.push(`/p/${submissionFormStore.currentForm?.route}`)"
                 />
                 <div class="space-y-3">
                     <h2 class="text-lg font-bold">Edit Submission</h2>
                     <h3 class="text-xl font-medium">
-                        {{ submissionFormStore.formResource.data?.title }}
+                        {{ submissionFormStore.currentForm?.title }}
                     </h3>
                     <Badge
-                        variant="subtle"
-                        :label="submissionFormStore.formIsPublished ? 'Live' : 'Closed'"
-                        :theme="submissionFormStore.formIsPublished ? 'green' : 'red'"
-                    />
+                        theme="blue"
+                    >
+                        {{ submissionFormStore.formIsPublished ? 'Live' : 'Closed' }}
+                    </Badge>
                 </div>
                 <hr />
                 <div class="space-y-3">
@@ -77,35 +78,25 @@ const isDirty = computed(() => {
                     <div class="flex gap-2 items-center text-sm text-ink-gray-6">
                         <span>Status</span>
                         <Badge
-                            :variant="editSubmissionStore.isDraft ? 'outline' : 'solid'"
-                            :label="editSubmissionStore.submission?.fp_submission_status"
-                        />
+                            :theme="editSubmissionStore.isDraft ? 'gray' : 'green'"
+                        >
+                            {{ editSubmissionStore.submission?.status }}
+                        </Badge>
                     </div>
                     <div class="text-sm text-ink-gray-6">
                         Submission ID:
                         <span class="font-mono">
-                            {{ editSubmissionStore.submission?.name }}
+                            {{ editSubmissionStore.submission?._id }}
                         </span>
-                    </div>
-                    <div class="flex gap-2 items-center text-sm text-ink-gray-6">
-                        <span
-                            >Last Modified:
-                            {{ formatDateTime(editSubmissionStore.submission?.modified) }}</span
-                        >
-                        <span>•</span>
-                        <span
-                            >Created:
-                            {{ formatDateTime(editSubmissionStore.submission?.creation) }}</span
-                        >
                     </div>
                 </div>
                 <Alert
                     v-if="!submissionFormStore.formIsPublished"
-                    :dismissable="false"
                     title="Form is closed!"
                     theme="blue"
-                    description="This form is no longer live. You can no longer edit your submission."
-                />
+                >
+                    This form is no longer live. You can no longer edit your submission.
+                </Alert>
                 <div class="form-container-simple">
                     <FormRenderer :disabled="!submissionFormStore.formIsPublished">
                         <template #actions>
@@ -129,7 +120,7 @@ const isDirty = computed(() => {
                                             );
                                         }
                                     "
-                                    :loading="editSubmissionStore.submissionResource.loading"
+                                    :loading="editSubmissionStore.isLoading"
                                 />
                                 <Button
                                     v-if="editSubmissionStore.isDraft && !isDirty"
@@ -145,12 +136,7 @@ const isDirty = computed(() => {
                                             editSubmissionStore.submitForm();
                                         }
                                     "
-                                    :loading="editSubmissionStore.submissionResource.loading"
-                                    :tooltip="
-                                        isDirty
-                                            ? 'You have unsaved changes. Please update the form before submitting.'
-                                            : ''
-                                    "
+                                    :loading="editSubmissionStore.isLoading"
                                 />
                                 <Button
                                     v-if="editSubmissionStore.isSubmitted"
@@ -158,20 +144,6 @@ const isDirty = computed(() => {
                                     :icon-left="CircleDashed"
                                     @click="editSubmissionStore.convertToDraft"
                                 />
-                                <Button
-                                    v-if="editSubmissionStore.isSubmitted"
-                                    variant="solid"
-                                    @click="
-                                        editSubmissionStore.updateAndSubmitForm(
-                                            submissionFormStore.fields
-                                        )
-                                    "
-                                    :disabled="!isDirty"
-                                    :loading="submissionFormStore.isLoading"
-                                    :tooltip="!isDirty ? 'No changes to Update' : ''"
-                                >
-                                    Update & Submit
-                                </Button>
                             </template>
                         </template>
                     </FormRenderer>
@@ -180,3 +152,4 @@ const isDirty = computed(() => {
         </div>
     </div>
 </template>
+

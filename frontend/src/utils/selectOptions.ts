@@ -1,6 +1,7 @@
-import { createResource } from "frappe-ui";
+import api from "@/utils/api";
 import type { Ref, ComputedRef } from "vue";
 import { ref, watch } from "vue";
+
 
 export type SelectOption = {
   label: string;
@@ -29,17 +30,14 @@ export async function getFieldOptions(
   }
 
   if (field.fieldtype === "Link") {
-    const resource = createResource({
-      url: "forms_pro.api.form.get_link_field_options",
-      makeParams: () => ({
+    const response = await api.get("/forms/link-options", {
+      params: {
         doctype: field.options,
-        filters: {},
-        page_length: 999,
-      }),
+      }
     });
-    await resource.fetch();
-    return resource.data as string[] | SelectOption[];
+    return response.data as string[] | SelectOption[];
   }
+
 
   return field.options;
 }

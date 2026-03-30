@@ -1,49 +1,62 @@
 <script setup lang="ts">
-import { Button, createResource, Popover } from "frappe-ui";
+import { Button, Popover } from "@/components/ui";
 import { session } from "@/data/session";
 import { useRoute } from "vue-router";
 import Avatar from "../ui/Avatar.vue";
+import { ref, onMounted } from "vue";
+import api from "@/utils/api";
+import { LogOut } from "lucide-vue-next";
 
 const route = useRoute();
-const brandLogo = createResource({
-    url: "forms_pro.api.settings.get_brand_logo",
-    auto: true,
-});
+const brandLogo = ref<string | null>(null);
+const websiteSettings = ref<any>(null);
 
-const websiteSettings = createResource({
-    url: "forms_pro.api.settings.get_website_settings",
-    auto: true,
-});
+async function fetchData() {
+    try {
+        const logoResp = await api.get("/settings/brand-logo");
+        brandLogo.value = logoResp.data;
+        const settingsResp = await api.get("/settings/website-settings");
+        websiteSettings.value = settingsResp.data;
+    } catch (err) {
+        // Fallback
+    }
+}
+
+onMounted(fetchData);
 
 function redirectToLogin() {
     window.location.href = `/login?redirect-to=${route.fullPath}`;
 }
 </script>
 <template>
-    <div class="max-w-screen-md mx-auto flex justify-between items-center">
-        <img :src="brandLogo.data" alt="Brand Logo" class="w-10 h-10" />
+    <div class="max-w-screen-md mx-auto flex justify-between items-center py-4">
+        <img v-if="brandLogo" :src="brandLogo" alt="Brand Logo" class="w-10 h-10 object-contain" />
+        <div v-else class="text-xl font-bold">Forms Pro</div>
         <div>
             <Popover v-if="session.user">
                 <template #target="{ togglePopover }">
                     <Button variant="ghost" @click="togglePopover">
-                        <Avatar :userId="session.user" size="lg" />
+                        <Avatar :userId="session.user._id" :label="session.user.fullName" size="lg" />
                     </Button>
                 </template>
-                <template #body-main>
-                    <div class="flex flex-col gap-2 bg-white rounded-lg p-2">
+                <template #body>
+                    <div class="flex flex-col gap-2 bg-white rounded-lg p-2 border shadow-lg z-50">
                         <Button
                             variant="ghost"
-                            theme="red"
-                            @click="session.logout.submit"
+                            @click="session.logout()"
                             label="Log out"
-                            icon-left="log-out"
-                        />
+                        >
+                            <template #icon-left>
+                                <LogOut class="w-4 h-4 text-red-500" />
+                            </template>
+                        </Button>
                     </div>
                 </template>
             </Popover>
-            <Button v-else-if="!websiteSettings.data?.disable_sign_up" @click="redirectToLogin">
+            <Button v-else-if="!websiteSettings?.disable_sign_up" @click="redirectToLogin">
                 Login
             </Button>
         </div>
     </div>
 </template>
+

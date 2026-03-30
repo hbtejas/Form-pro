@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import { ArrowLeft, LayoutGrid } from "lucide-vue-next";
-import { Breadcrumbs } from "frappe-ui";
+import { Breadcrumbs } from "@/components/ui";
 import { ref, computed, watch } from "vue";
 import { useManageForm } from "@/stores/form/manageForm";
 import { useRoute, useRouter } from "vue-router";
+
 
 const manageFormStore = useManageForm();
 const route = useRoute();

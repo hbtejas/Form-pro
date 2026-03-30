@@ -1,97 +1,79 @@
-import { createDocumentResource } from "frappe-ui";
+import api from "@/utils/api";
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { computed, ref, reactive } from "vue";
 import { toast } from "vue-sonner";
 
 export const useEditSubmission = defineStore("editSubmission", () => {
-  const submissionDoctype = ref<string | null>(null);
-  const submissionName = ref<string | null>(null);
-  const submissionResource = ref<any>(null);
-  const submission = computed(() => submissionResource.value?.doc || null);
+  const submissionId = ref<string | null>(null);
+  const submissionData = ref<any>(null);
+  
+  const submission = computed(() => submissionData.value);
   const isDraft = computed(
-    () => submission.value?.fp_submission_status == "Draft"
+    () => submission.value?.status == "Draft"
   );
   const isSubmitted = computed(
-    () => submission.value?.fp_submission_status == "Submitted"
+    () => submission.value?.status == "Submitted"
   );
 
-  const isLoading = ref(true);
+  const isLoading = ref(false);
 
-  async function initialize(doctype: string, name: string) {
+  async function initialize(id: string) {
     isLoading.value = true;
-    submissionDoctype.value = doctype;
-    submissionName.value = name;
-    submissionResource.value = createDocumentResource({
-      doctype: submissionDoctype.value,
-      name: submissionName.value,
-    });
-
-    isLoading.value = false;
+    submissionId.value = id;
+    try {
+      const resp = await api.get(`/submissions/${id}`);
+      submissionData.value = resp.data;
+    } catch (err) {
+      toast.error("Failed to load submission");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  function convertToDraft() {
-    submissionResource.value.setValue.submit(
-      {
-        fp_submission_status: "Draft",
-      },
-      {
-        onSuccess: () => {
-          toast.success("Submission converted to draft");
-        },
-        onError: () => {
-          toast.error("Failed to convert submission to draft");
-        },
-      }
-    );
+  async function convertToDraft() {
+    try {
+      const resp = await api.patch(`/submissions/${submissionId.value}`, { status: "Draft" });
+      submissionData.value = resp.data;
+      toast.success("Submission converted to draft");
+    } catch (err) {
+      toast.error("Failed to convert submission to draft");
+    }
   }
 
-  function updateForm(data: Record<string, any>): Promise<void> {
-    return new Promise((resolve, reject) => {
-      submissionResource.value.setValue.submit(data, {
-        onSuccess: () => {
-          toast.success("Your response has been updated");
-          resolve();
-        },
-        onError: () => {
-          toast.error("Failed to update your response!");
-          reject(new Error("Failed to update submission"));
-        },
-      });
-    });
+  async function updateForm(data: Record<string, any>) {
+    try {
+      const resp = await api.patch(`/submissions/${submissionId.value}`, { data });
+      submissionData.value = resp.data;
+      toast.success("Your response has been updated");
+    } catch (err) {
+      toast.error("Failed to update your response!");
+      throw err;
+    }
   }
 
   async function updateAndSubmitForm(data: Record<string, any>) {
     try {
       await updateForm(data);
-      submitForm();
+      await submitForm();
     } catch (error) {
-      // Error already handled in updateForm's onError callback
       console.error("Error updating form before submission:", error);
     }
   }
 
-  function submitForm() {
-    submissionResource.value.setValue.submit(
-      {
-        fp_submission_status: "Submitted",
-      },
-      {
-        onSuccess: () => {
-          toast.success("Successfully submitted your response!");
-        },
-        onError: () => {
-          toast.error("Failed to submit!");
-        },
-      }
-    );
+  async function submitForm() {
+    try {
+      const resp = await api.patch(`/submissions/${submissionId.value}`, { status: "Submitted" });
+      submissionData.value = resp.data;
+      toast.success("Successfully submitted your response!");
+    } catch (err) {
+      toast.error("Failed to submit!");
+    }
   }
 
   return {
-    submissionResource,
     submission,
     isLoading,
-    submissionDoctype,
-    submissionName,
+    submissionId,
     initialize,
     isDraft,
     isSubmitted,
@@ -101,3 +83,4 @@ export const useEditSubmission = defineStore("editSubmission", () => {
     submitForm,
   };
 });
+

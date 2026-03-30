@@ -80,63 +80,76 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, reactive } from "vue";
 import { toast } from "vue-sonner";
 import { useUser } from "@/stores/user";
-import { Dropdown, Dialog, createResource, Combobox, Breadcrumbs } from "frappe-ui";
+import { Dropdown, Dialog, Combobox, Breadcrumbs, Button } from "@/components/ui";
 import { createNewFormWithDoctype, createNewForm } from "@/utils/form_generator";
-import FormPreviewCard from "@/components/dashboard/FormPreviewCard.vue";
-const router = useRouter();
-const showSelectDoctypeDialog = ref(false);
-const selectedDoctype = ref<string | null>(null);
-const user = useUser();
+import api from "@/utils/api";
 
 const breadcrumbItems = ref([{ label: "Manage" }, { label: "All Forms" }]);
 
-const doctypesList = createResource({
-    url: "forms_pro.api.form.get_doctype_list",
+const doctypesList = reactive({
+    data: [] as any[],
+    loading: false,
+    async fetch() {
+        this.loading = true;
+        try {
+            const resp = await api.get("/doctypes");
+            this.data = resp.data;
+        } catch (err) {
+            this.data = [];
+        } finally {
+            this.loading = false;
+        }
+    }
 });
 
-// Ensure doctypesList.data is always an array to prevent Combobox errors
 const doctypesOptions = computed(() => doctypesList.data || []);
 
 const handleCreateDraftFormWithDoctype = async () => {
-    if (!selectedDoctype.value || !user.currentTeam?.name) {
+    if (!selectedDoctype.value || !user.currentTeam?._id) {
         toast.error("Error occured while creating form. Check DocType Selected.");
         return;
     }
-    const data = await createNewFormWithDoctype(selectedDoctype.value, user.currentTeam.name);
+    const data = await createNewFormWithDoctype(selectedDoctype.value, user.currentTeam._id);
     router.push({
         name: "Edit Form",
         params: {
-            id: data.form_document,
+            id: data._id,
         },
     });
 };
 
 const handleCreateDraftForm = async () => {
-    if (!user.currentTeam?.name) {
+    if (!user.currentTeam?._id) {
         toast.error("Error occured while creating form. User has no default team.");
         return;
     }
-    const data = await createNewForm(user.currentTeam.name);
+    const data = await createNewForm(user.currentTeam._id);
     router.push({
         name: "Edit Form",
         params: {
-            id: data.form_document,
+            id: data._id,
         },
     });
 };
 
-const teamForms = createResource({
-    url: "forms_pro.api.team.get_team_forms",
-    makeParams() {
-        return {
-            team_id: user.currentTeam?.name,
-        };
-    },
-    loading: true,
-    cache: "teamForms",
+const teamForms = reactive({
+    data: [] as any[],
+    loading: false,
+    async fetch() {
+        if (!user.currentTeam?._id) return;
+        this.loading = true;
+        try {
+            const resp = await api.get("/forms", { params: { team_id: user.currentTeam._id } });
+            this.data = resp.data;
+        } catch (err) {
+            this.data = [];
+        } finally {
+            this.loading = false;
+        }
+    }
 });
 
 watch(
@@ -151,11 +164,12 @@ watch(
 
 watch(
     () => user.user,
-    (user) => {
-        if (user && user.has_desk_access) {
+    (u) => {
+        if (u && u.has_desk_access) {
             doctypesList.fetch();
         }
     },
     { immediate: true }
 );
 </script>
+

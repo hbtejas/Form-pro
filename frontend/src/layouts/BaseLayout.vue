@@ -38,10 +38,11 @@
                             <Button
                                 variant="ghost"
                                 theme="red"
-                                @click="session.logout.submit"
+                                @click="session.logout"
                                 label="Log out"
                                 :icon-left="LogOut"
                             />
+
                         </div>
                     </template>
                 </Popover>
@@ -54,23 +55,17 @@
 </template>
 <script setup lang="ts">
 import { session } from "@/data/session";
-import { Popover, Sidebar, type SidebarProps } from "frappe-ui";
+import { Popover, Sidebar, Button } from "@/components/ui";
 import { EllipsisVertical, LogOut } from "lucide-vue-next";
 import type { PropType } from "vue";
 import Avatar from "@/components/ui/Avatar.vue";
 import TeamSwitcher from "@/components/team/TeamSwitcher.vue";
 
-type SidebarSectionProps = NonNullable<SidebarProps["sections"]> extends (infer T)[] ? T : never;
-type SidebarHeaderProps = NonNullable<SidebarProps["header"]>;
-
 const props = defineProps({
-    sidebarHeader: {
-        type: Object as PropType<SidebarHeaderProps | null>,
-        default: null,
-    },
     sidebarSections: {
-        type: Array as PropType<SidebarSectionProps[]>,
+        type: Array as PropType<any[]>,
         default: () => [],
     },
 });
 </script>
+

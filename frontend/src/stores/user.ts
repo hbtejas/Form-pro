@@ -1,11 +1,12 @@
 import type { ThemePreferenceType } from "@/utils/theme";
 import setTheme from "@/utils/theme";
-import { createResource } from "frappe-ui";
+import api from "@/utils/api";
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { toast } from "vue-sonner";
 
 export type UserTeam = {
+  _id: string; // MERN use _id
   name: string;
   team_name: string;
   logo: string | null;
@@ -13,116 +14,91 @@ export type UserTeam = {
 };
 
 export const useUser = defineStore("user", () => {
-  const user = computed(() => userResource.data);
-  const userTeams = computed<UserTeam[]>(() => userTeamsResource.data);
+  const user = ref<any>(null);
+  const userTeams = ref<UserTeam[]>([]);
   const currentTeam = ref<UserTeam | null>(null);
+  const isLoading = ref(false);
 
-  const userResource = createResource({
-    url: "forms_pro.api.user.get_current_user",
-  });
+  async function fetchUser() {
+    try {
+      const response = await api.get("/user/current");
+      user.value = response.data;
+    } catch (err) {
+      user.value = null;
+    }
+  }
 
-  const userTeamsResource = createResource({
-    url: "forms_pro.api.user.get_user_teams",
-    onSuccess(data: UserTeam[]) {
-      const _currTeam = data.find((team) => team.is_current);
+  async function fetchUserTeams() {
+    try {
+      const response = await api.get("/teams");
+      userTeams.value = response.data;
+      const _currTeam = userTeams.value.find((team) => team.is_current);
       if (!_currTeam) {
-        if (data.length > 0) {
-          setCurrentTeam(data[0]);
+        if (userTeams.value.length > 0) {
+          setCurrentTeam(userTeams.value[0]);
         }
-        return;
+      } else {
+        setCurrentTeam(_currTeam);
       }
-      setCurrentTeam(_currTeam);
-    },
-    onError(error: Error) {
+    } catch (err: any) {
       toast.error("Failed to fetch user teams", {
-        description: error.message,
+        description: err.message,
       });
-    },
-  });
+    }
+  }
 
   async function initialize() {
-    await userResource.fetch();
-    await userTeamsResource.fetch();
-  }
-
-  function fetchUser() {
-    userResource.fetch();
-  }
-
-  function fetchUserTeams() {
-    userTeamsResource.fetch();
-  }
-
-  // @ts-ignore
-  function getCurrentTeamFromAllTeams() {
-    return userTeams.value?.find((team) => team.is_current);
+    isLoading.value = true;
+    await Promise.all([fetchUser(), fetchUserTeams()]);
+    isLoading.value = false;
   }
 
   function setCurrentTeam(team: UserTeam) {
     currentTeam.value = team;
   }
 
-  function switchTeam(team: UserTeam) {
-    createResource({
-      url: "forms_pro.api.team.switch_team",
-      method: "POST",
-      makeParams() {
-        return {
-          team_id: team.name,
-        };
-      },
-      onSuccess() {
-        userTeamsResource.reload();
-        toast.success("Team switched successfully");
-      },
-      onError(error: Error) {
-        toast.error("Failed to switch team", {
-          description: error.message,
-        });
-      },
-    }).submit();
+  async function switchTeam(team: UserTeam) {
+    try {
+      await api.post(`/teams/switch/${team._id || team.name}`);
+      await fetchUserTeams();
+      toast.success("Team switched successfully");
+    } catch (err: any) {
+      toast.error("Failed to switch team", {
+        description: err.message,
+      });
+    }
   }
 
-  function createTeam(teamName: string, logoUrl: string | undefined) {
-    createResource({
-      url: "forms_pro.api.team.create_team",
-      method: "POST",
-      makeParams() {
-        return {
-          team_name: teamName,
-          logo_url: logoUrl,
-        };
-      },
-      onSuccess() {
-        userTeamsResource.reload();
-        toast.success("Team created successfully");
-      },
-      onError(error: Error) {
-        toast.error("Failed to create team", {
-          description: error.message,
-        });
-      },
-    }).submit();
+  async function createTeam(teamName: string, logoUrl: string | undefined) {
+    try {
+      await api.post("/teams", {
+        team_name: teamName,
+        logo_url: logoUrl,
+      });
+      await fetchUserTeams();
+      toast.success("Team created successfully");
+    } catch (err: any) {
+      toast.error("Failed to create team", {
+        description: err.message,
+      });
+    }
   }
 
   async function toggleThemePreference(theme: ThemePreferenceType) {
     setTheme(theme);
-
-    const switchTheme = createResource({
-      url: "frappe.core.doctype.user.user.switch_theme",
-      params: {
-        theme,
-      },
-    });
-    await switchTheme.fetch().then(() => {
-      userResource.reload();
-    });
+    try {
+      await api.post("/user/theme", { theme });
+      await fetchUser();
+    } catch (err) {
+      console.error("Failed to save theme preference");
+    }
   }
 
   return {
     user,
     userTeams,
     currentTeam,
+    isLoading,
     initialize,
     fetchUser,
     fetchUserTeams,
@@ -132,3 +108,4 @@ export const useUser = defineStore("user", () => {
     toggleThemePreference,
   };
 });
+

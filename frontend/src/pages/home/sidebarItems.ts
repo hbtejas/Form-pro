@@ -1,13 +1,18 @@
 import { Files, UsersRound } from "lucide-vue-next";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import type { SidebarProps } from "frappe-ui";
 
-type SidebarSectionProps = NonNullable<
-  SidebarProps["sections"]
-> extends (infer T)[]
-  ? T
-  : never;
+export type SidebarItemProps = {
+  label: string;
+  to: string;
+  icon: any;
+  isActive: boolean;
+};
+
+export type SidebarSectionProps = {
+  label?: string;
+  items: SidebarItemProps[];
+};
 
 export function useSidebarItems() {
   const route = useRoute();
@@ -36,3 +41,4 @@ export function useSidebarItems() {
     },
   ]);
 }
+

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Dialog, ErrorMessage } from "frappe-ui";
+import { Dialog, ErrorMessage, Button, Input } from "@/components/ui";
 import * as z from "zod";
 import { reactive, ref, watch } from "vue";
 import { useUser } from "@/stores/user";
 import TeamLogo from "@/components/team/TeamLogo.vue";
 import ImageUploader from "@/components/ImageUploader/ImageUploader.vue";
-import type { UploadedFile } from "frappe-ui";
+import { X, Upload, Plus } from "lucide-vue-next";
 
 const user = useUser();
 const model = defineModel<boolean>({
@@ -54,7 +54,7 @@ function createTeam() {
     model.value = false;
 }
 
-function setTeamLogo(file: UploadedFile) {
+function setTeamLogo(file: any) {
     form.logo_url = file.file_url;
 }
 
@@ -63,79 +63,86 @@ function removeTeamLogo() {
 }
 </script>
 <template>
-    <Dialog
-        v-model="model"
-        :options="{
-            title: 'Create New Team',
-        }"
-    >
-        <template #body-content>
-            <div
-                class="flex flex-col items-center gap-4 w-full p-4 rounded bg-surface-gray-1 border border-surface-gray-2"
-            >
-                <div class="flex flex-col items-center gap-4 my-2">
-                    <div class="relative">
-                        <Button
-                            v-if="form.logo_url"
-                            variant="outline"
-                            size="sm"
-                            class="!text-xs !size-6 absolute -top-2 -right-2 rounded-full"
-                            icon="x"
-                            @click="removeTeamLogo"
-                        />
+    <Dialog v-model="model">
+        <div class="flex flex-col gap-6 min-w-[400px]">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                    <Plus class="w-6 h-6" />
+                </div>
+                <h3 class="text-xl font-bold">Create New Team</h3>
+            </div>
+
+            <div class="flex flex-col items-center gap-6 p-6 rounded-xl bg-gray-50 border border-dashed border-gray-300">
+                <div class="relative group">
+                    <Button
+                        v-if="form.logo_url"
+                        variant="solid"
+                        class="!p-1 !h-6 !w-6 absolute -top-2 -right-2 rounded-full z-10 shadow-lg"
+                        @click="removeTeamLogo"
+                    >
+                        <template #icon-left>
+                            <X class="w-3 h-3" />
+                        </template>
+                    </Button>
+                    <div class="p-1 bg-white rounded-full shadow-sm">
                         <TeamLogo
-                            :team-name="form.team_name"
-                            class="size-14"
+                            :team-name="form.team_name || 'Team'"
+                            class-names="h-20 w-20 rounded-full border-2 border-gray-100"
                             :logo-url="form.logo_url ?? null"
                         />
                     </div>
-                    <div class="text-xs text-ink-gray-6 text-center flex flex-col gap-2">
-                        <p>The team logo is automatically generated based on the team name.</p>
-                        <div class="flex gap-2 items-center justify-center">
-                            <p>Don't like it?</p>
-                            <ImageUploader
-                                :crop-dimensions="{ width: 400, height: 400 }"
-                                :upload-args="{ folder: 'Home' }"
-                                @success="(file) => setTeamLogo(file)"
-                            >
-                                <template
-                                    #default="{ uploading, progress, error, openFileSelector }"
-                                >
-                                    <ErrorMessage :message="error ?? undefined" />
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        class="!text-xs"
-                                        @click="openFileSelector"
-                                        :loading="uploading"
-                                    >
-                                        {{
-                                            uploading
-                                                ? `Uploading ${progress}%`
-                                                : "Upload your own"
-                                        }}
-                                    </Button>
-                                </template>
-                            </ImageUploader>
-                        </div>
-                    </div>
                 </div>
-                <input
-                    type="text"
-                    v-model="form.team_name"
-                    class="text-lg text-ink-gray-9 !outline-0 !ring-0 !border-0 bg-inherit text-center"
-                    placeholder="Enter team name"
-                />
-                <ErrorMessage :message="formErrors" />
-                <Button
+
+                <div class="text-center space-y-1">
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Team Logo</p>
+                    <ImageUploader
+                        :crop-dimensions="{ width: 400, height: 400 }"
+                        @success="(file) => setTeamLogo(file)"
+                    >
+                        <template #default="{ uploading, progress, error, openFileSelector }">
+                            <ErrorMessage v-if="error">{{ error }}</ErrorMessage>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                class="text-blue-600 hover:text-blue-700 font-medium"
+                                @click="openFileSelector"
+                                :loading="uploading"
+                            >
+                                <template #icon-left>
+                                    <Upload class="w-3 h-3" />
+                                </template>
+                                {{ uploading ? `Uploading ${progress}%` : "Upload Custom Logo" }}
+                            </Button>
+                        </template>
+                    </ImageUploader>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-sm font-semibold text-gray-700">Team Name</label>
+                    <Input
+                        v-model="form.team_name"
+                        placeholder="e.g. Design Team, Marketing"
+                        autofocus
+                    />
+                </div>
+                
+                <ErrorMessage v-if="formErrors">
+                    {{ formErrors }}
+                </ErrorMessage>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t">
+                <Button label="Cancel" variant="outline" @click="model = false" />
+                <Button 
+                    variant="solid" 
+                    :disabled="formErrors !== '' || !form.team_name" 
                     @click="createTeam"
-                    class="w-full"
-                    variant="outline"
-                    :disabled="formErrors !== ''"
                 >
                     Create Team
                 </Button>
             </div>
-        </template>
+        </div>
     </Dialog>
 </template>

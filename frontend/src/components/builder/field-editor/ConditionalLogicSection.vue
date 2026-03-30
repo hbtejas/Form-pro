@@ -7,9 +7,10 @@ import {
     type Condition,
     Actions,
 } from "@/types/conditional-render.types";
-import { EllipsisVertical, Trash, Workflow, Zap } from "lucide-vue-next";
-import { FormControl, Popover } from "frappe-ui";
+import { EllipsisVertical, Trash, Workflow, Zap, Plus } from "lucide-vue-next";
+import { Input, Popover, Select, Button } from "@/components/ui";
 import type { FormField } from "@/types/formfield";
+
 
 const editFormStore = useEditForm();
 
@@ -132,15 +133,15 @@ const showValueInput = (operator: ConditionalOperators) => {
         <label class="block text-xs text-ink-gray-5">Conditional Logic</label>
         <div
             v-if="conditionalLogic && conditionalLogic.conditions.length > 0"
-            class="p-3 bg-surface-gray-1 border rounded flex flex-col gap-4"
+            class="p-3 bg-gray-50 border rounded flex flex-col gap-4"
         >
             <div
                 v-for="(condition, index) in conditionalLogic?.conditions"
                 :key="index"
-                class="flex flex-col gap-2"
+                class="flex flex-col gap-2 p-2 border rounded bg-white"
             >
                 <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2 text-ink-gray-5 text-sm">
+                    <div class="flex items-center gap-2 text-gray-500 text-sm">
                         <Workflow class="w-4 h-4" />
                         <span>When</span>
                     </div>
@@ -148,68 +149,57 @@ const showValueInput = (operator: ConditionalOperators) => {
                         <template #target="{ togglePopover }">
                             <Button
                                 variant="ghost"
-                                size="sm"
                                 @click="togglePopover"
-                                :icon="EllipsisVertical"
-                                tooltip="Actions"
-                            />
-                        </template>
-                        <template #body-main>
-                            <div
-                                class="flex flex-col gap-2 p-2 bg-surface-white rounded field-editor-sidebar"
                             >
+                                <template #icon-left>
+                                    <EllipsisVertical class="w-4 h-4" />
+                                </template>
+                            </Button>
+                        </template>
+                        <template #body>
+                            <div class="bg-white border rounded shadow-lg p-1 z-50">
                                 <Button
                                     variant="ghost"
-                                    theme="red"
-                                    size="sm"
                                     @click="removeCondition(index)"
-                                    :icon-left="Trash"
                                     label="Remove"
-                                    tooltip="Remove Condition"
-                                />
+                                >
+                                    <template #icon-left>
+                                        <Trash class="w-4 h-4 text-red-500" />
+                                    </template>
+                                </Button>
                             </div>
                         </template>
                     </Popover>
                 </div>
-                <FormControl
-                    type="select"
+                <Select
                     placeholder="Select Field"
-                    variant="outline"
                     :options="availableFieldOptions"
                     v-model="condition.fieldname"
                 />
-                <FormControl
-                    type="select"
+                <Select
                     placeholder="Select Operator"
-                    variant="outline"
                     :options="operatorOptions"
                     v-model="condition.operator"
                 />
-                <FormControl
+                <Input
                     v-if="showValueInput(condition.operator)"
-                    type="text"
                     placeholder="Value"
-                    variant="outline"
                     v-model="condition.value"
                 />
             </div>
 
             <!-- Actions -->
-            <div class="flex items-center gap-2 text-ink-gray-5 text-sm">
+            <div class="flex items-center gap-2 text-gray-500 text-sm mt-2">
                 <Zap class="w-4 h-4" />
                 <span>Then</span>
             </div>
-            <FormControl
-                type="select"
+            <Select
                 placeholder="Select Action"
-                variant="outline"
                 :options="actionOptions"
                 v-model="conditionalLogic.action"
             />
-            <FormControl
-                type="select"
+            <Select
                 placeholder="Select Field"
-                variant="outline"
                 :options="availableFieldOptions"
                 v-model="conditionalLogic.target_field"
             />
@@ -217,10 +207,13 @@ const showValueInput = (operator: ConditionalOperators) => {
         <Button
             v-if="!conditionalLogic || conditionalLogic?.conditions.length === 0"
             variant="outline"
-            size="sm"
             @click="addCondition"
-            icon="plus"
-            tooltip="Add Condition"
-        />
+            label="Add Condition"
+        >
+            <template #icon-left>
+                <Plus class="w-4 h-4" />
+            </template>
+        </Button>
+
     </div>
 </template>

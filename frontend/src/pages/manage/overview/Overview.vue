@@ -4,7 +4,7 @@ import DescriptionSection from "@/components/form/manage/DescriptionSection.vue"
 import { useManageForm } from "@/stores/form/manageForm";
 import { FileText, CaseLower, Lock } from "lucide-vue-next";
 import { formatPrettyDate } from "@/utils/date";
-import { TabButtons, LoadingText, Badge } from "frappe-ui";
+import { TabButtons, LoadingText, Badge, Button } from "@/components/ui";
 import Avatar from "@/components/ui/Avatar.vue";
 import { useQueryParam } from "@/composables/useQueryParam";
 
@@ -13,35 +13,33 @@ const manageFormStore = useManageForm();
 const tabs = [
     {
         label: "Description",
-        iconLeft: CaseLower,
+        icon: CaseLower,
         value: "description",
     },
     {
         label: "Access",
-        iconLeft: Lock,
+        icon: Lock,
         value: "shared",
     },
-] as const;
+] as any[];
 
-// Extract tab value type from tabs array - automatically includes all tab values
-type TabValue = typeof tabs[number]["value"];
-const validTabValues: TabValue[] = tabs.map((t) => t.value);
-const selectedTab = useQueryParam<TabValue>("tab", "description", validTabValues);
+const validTabValues = tabs.map((t) => t.value);
+const selectedTab = useQueryParam<string>("tab", "description", validTabValues);
 </script>
 
 <template>
-    <div v-if="manageFormStore.formResource.value?.loading">
+    <div v-if="!manageFormStore.formData">
         <LoadingText />
     </div>
-    <div v-if="manageFormStore.formData">
+    <div v-else>
         <div class="flex flex-col gap-3">
             <Badge
                 v-if="manageFormStore.formData?.is_published"
                 class="w-fit"
-                label="Published"
-                variant="solid"
-                size="md"
-            />
+                theme="green"
+            >
+                Published
+            </Badge>
 
             <div class="flex gap-3 justify-between items-center">
                 <div class="flex gap-3 items-center text-ink-gray-8">
@@ -53,28 +51,27 @@ const selectedTab = useQueryParam<TabValue>("tab", "description", validTabValues
                         @click="
                             $router.push({
                                 name: 'Edit Form',
-                                params: { id: manageFormStore.formData?.name },
+                                params: { id: manageFormStore.formData?._id },
                             })
                         "
                         class="w-24"
-                        size="md"
                         label="Edit"
                         variant="solid"
-                        icon-left="edit-2"
                     />
                 </div>
             </div>
             <div class="flex flex-col gap-2 text-ink-gray-5">
                 <div class="flex gap-2 items-center text-xs">
-                    <p>Modified {{ formatPrettyDate(manageFormStore.formData?.modified) }}</p>
+                    <p>Modified {{ formatPrettyDate(manageFormStore.formData?.updatedAt) }}</p>
                     <span>•</span>
-                    <p>Created {{ formatPrettyDate(manageFormStore.formData?.creation) }} by</p>
+                    <p>Created {{ formatPrettyDate(manageFormStore.formData?.createdAt) }} by</p>
                     <Avatar :userId="manageFormStore.formData?.owner" />
                 </div>
             </div>
-            <TabButtons class="w-fit mb-2" :buttons="tabs" v-model="selectedTab" />
+            <TabButtons class="w-fit mb-2" :options="tabs" v-model="selectedTab" />
             <DescriptionSection v-if="selectedTab === 'description'" />
             <AccessSection v-if="selectedTab === 'shared'" />
         </div>
     </div>
 </template>
+

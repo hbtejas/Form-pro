@@ -2,7 +2,7 @@
 import { DotLottieVue } from "@lottiefiles/dotlottie-vue";
 import { useSubmissionForm } from "@/stores/submissionForm";
 import { computed } from "vue";
-import { TextEditor } from "frappe-ui";
+import { TextEditor } from "@/components/ui";
 
 const submissionFormStore = useSubmissionForm();
 
@@ -18,12 +18,11 @@ const isEmptyHtml = (html: string | null | undefined): boolean => {
 };
 
 const successTitle = computed(() => {
-    const title = submissionFormStore.formResource.data?.success_title;
-    return title;
+    return submissionFormStore.currentForm?.success_title || "Success!";
 });
 
 const successDescription = computed(() => {
-    const description = submissionFormStore.formResource.data?.success_description;
+    const description = submissionFormStore.currentForm?.success_description;
     if (!description || isEmptyHtml(description)) {
         return "<p style='text-align: center;'>Thank you for submitting the form. We will get back to you soon.</p>";
     }
@@ -31,7 +30,7 @@ const successDescription = computed(() => {
 });
 </script>
 <template>
-    <div class="flex flex-col gap-4 items-center">
+    <div class="flex flex-col gap-4 items-center py-12">
         <DotLottieVue
             src="https://lottie.host/b9ba5ce8-d753-497a-946c-76e0da2ec22d/QcoLWNS7AP.lottie"
             autoplay
@@ -41,9 +40,10 @@ const successDescription = computed(() => {
         />
         <h2 class="text-3xl font-bold text-center">{{ successTitle }}</h2>
         <TextEditor
-            :content="successDescription"
+            :model-value="successDescription"
             editor-class="h-fit !w-full form-description !px-0 max-w-full max-h-full"
             :editable="false"
         />
     </div>
 </template>
+
