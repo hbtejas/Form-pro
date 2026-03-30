@@ -52,12 +52,28 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// Get public form
+router.get('/public/:idOrRoute', async (req, res) => {
+  try {
+    const form = await Form.findOne({
+      $or: [
+        { _id: req.params.idOrRoute.match(/^[0-9a-fA-F]{24}$/) ? req.params.idOrRoute : null },
+        { route: req.params.idOrRoute }
+      ].filter(f => f !== null)
+    });
+    if (!form) return res.status(404).json({ message: 'Form not found' });
+    res.json(form);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Submit form response
-router.post('/:id/submit', async (req, res) => {
+router.post('/:id/submissions', async (req, res) => {
   try {
     const submission = new FormSubmission({
       form: req.params.id,
-      data: req.body.data,
+      data: req.body.values, // Store body.values
       submitted_by: req.body.user_id || 'Guest'
     });
     await submission.save();
@@ -66,6 +82,7 @@ router.post('/:id/submit', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
 
 // Validate route uniqueness
 router.get('/validate-route/:route', async (req, res) => {
@@ -80,4 +97,15 @@ router.get('/validate-route/:route', async (req, res) => {
   }
 });
 
+// Check if login required
+router.get('/login-required', async (req, res) => {
+  try {
+    const form = await Form.findOne({ route: req.query.route });
+    res.json({ loginRequired: form ? form.login_required : false });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
+

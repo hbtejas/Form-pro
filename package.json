@@ -1,15 +1,13 @@
 {
-  "name": "forms_pro",
-  "version": "0.0.0-pre",
-  "description": "Web Forms on steroids!",
-  "main": "index.js",
-  "devDependencies": {},
+  "name": "form-pro-mern",
+  "version": "1.0.0",
+  "description": "Web Forms on steroids - MERN Stack",
   "scripts": {
-    "postinstall": "cd frontend && yarn install",
-    "dev": "cd frontend && yarn dev",
-    "build": "cd frontend && yarn build"
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build"
   },
-  "keywords": [],
-  "author": "harsh@buildwithhussain.com",
-  "license": "AGPL-3.0"
-}
+  "author": "Tejas",
+  "license": "MIT"
+}
