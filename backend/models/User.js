@@ -10,10 +10,11 @@ const UserSchema = new mongoose.Schema({
   current_team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
 }, { timestamps: true });
 
-UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+UserSchema.pre('save', async function() {
+  if (!this.isModified('password')) return;
+  const bcrypt = require('bcryptjs');
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
+
 
 module.exports = mongoose.model('User', UserSchema);
