@@ -1,4 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "./assets/Inter/inter.css";
+
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap");
 
 
@@ -38,5 +43,6 @@
 }
 
 .form-container-simple {
-    @apply space-y-4 shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-surface-white border rounded-lg p-6 max-w-screen-md mx-auto;
+    @apply space-y-4 shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-white border rounded-lg p-6 max-w-screen-md mx-auto;
+
 }
