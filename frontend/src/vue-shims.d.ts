@@ -1,14 +1,14 @@
 declare module "*.vue" {
-  import type { DefineComponent } from "vue";
-  const component: DefineComponent<{}, {}, any>;
-  export default component;
+	import type { DefineComponent } from "vue"
+	const component: DefineComponent<{}, {}, any>
+	export default component
 }
 
-export {};
+export {}
 
 declare global {
-  interface Window {
-    site_name?: string;
-    csrf_token?: string;
-  }
+	interface Window {
+		site_name?: string
+		csrf_token?: string
+	}
 }

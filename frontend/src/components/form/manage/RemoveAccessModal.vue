@@ -1,20 +1,23 @@
 <script setup lang="ts">
-import { Dialog, Button } from "@/components/ui";
-import { useManageForm } from "@/stores/form/manageForm";
-import { AlertTriangle, Trash2, X } from "lucide-vue-next";
+import { Button, Dialog } from "@/components/ui"
+import { useManageForm } from "@/stores/form/manageForm"
+import { AlertTriangle, Trash2, X } from "lucide-vue-next"
 
-const manageFormStore = useManageForm();
+const manageFormStore = useManageForm()
 
-const open = defineModel<boolean>({ required: true, default: false });
-const selectedUserToRemove = defineModel<string | null>("selectedUserToRemove", {
-    required: true,
-    default: null,
-});
+const open = defineModel<boolean>({ required: true, default: false })
+const selectedUserToRemove = defineModel<string | null>(
+	"selectedUserToRemove",
+	{
+		required: true,
+		default: null,
+	},
+)
 
 function removeAccess() {
-    if (!selectedUserToRemove.value) return;
-    manageFormStore.removeAccess(selectedUserToRemove.value);
-    open.value = false;
+	if (!selectedUserToRemove.value) return
+	manageFormStore.removeAccess(selectedUserToRemove.value)
+	open.value = false
 }
 </script>
 <template>

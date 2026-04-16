@@ -1,54 +1,58 @@
 <script setup lang="ts">
-import { useUser } from "@/stores/user";
-import { Button, Input } from "@/components/ui";
-import { ChevronsUpDown, Search, Plus } from "lucide-vue-next";
-import { computed, inject, ref, onMounted, onUnmounted } from "vue";
-import CreateTeamDialog from "@/components/team/CreateTeamDialog.vue";
-import TeamSwitcherItem from "@/components/team/TeamSwitcherItem.vue";
-import TeamLogo from "@/components/team/TeamLogo.vue";
+import CreateTeamDialog from "@/components/team/CreateTeamDialog.vue"
+import TeamLogo from "@/components/team/TeamLogo.vue"
+import TeamSwitcherItem from "@/components/team/TeamSwitcherItem.vue"
+import { Button, Input } from "@/components/ui"
+import { useUser } from "@/stores/user"
+import { ChevronsUpDown, Plus, Search } from "lucide-vue-next"
+import { computed, inject, onMounted, onUnmounted, ref } from "vue"
 
-const isSidebarCollapsed = inject("isSidebarCollapsed");
+const isSidebarCollapsed = inject("isSidebarCollapsed")
 
-const showCreateTeamDialog = ref(false);
-const searchQuery = ref("");
-const userStore = useUser();
-const isOpen = ref(false);
-const switcherRef = ref<HTMLElement | null>(null);
+const showCreateTeamDialog = ref(false)
+const searchQuery = ref("")
+const userStore = useUser()
+const isOpen = ref(false)
+const switcherRef = ref<HTMLElement | null>(null)
 
 const filteredTeams = computed(() => {
-    return userStore.userTeams?.filter(
-        (team) =>
-            team._id !== userStore.currentTeam?._id &&
-            team.team_name.toLowerCase().includes(searchQuery.value.trim().toLowerCase())
-    ) ?? [];
-});
+	return (
+		userStore.userTeams?.filter(
+			(team) =>
+				team._id !== userStore.currentTeam?._id &&
+				team.team_name
+					.toLowerCase()
+					.includes(searchQuery.value.trim().toLowerCase()),
+		) ?? []
+	)
+})
 
 function toggleDropdown() {
-    isOpen.value = !isOpen.value;
+	isOpen.value = !isOpen.value
 }
 
 function closeDropdown() {
-    isOpen.value = false;
+	isOpen.value = false
 }
 
 function handleTeamSwitch(team: any) {
-    userStore.switchTeam(team);
-    closeDropdown();
+	userStore.switchTeam(team)
+	closeDropdown()
 }
 
 function handleClickOutside(event: MouseEvent) {
-    if (switcherRef.value && !switcherRef.value.contains(event.target as Node)) {
-        closeDropdown();
-    }
+	if (switcherRef.value && !switcherRef.value.contains(event.target as Node)) {
+		closeDropdown()
+	}
 }
 
 onMounted(() => {
-    document.addEventListener("click", handleClickOutside);
-});
+	document.addEventListener("click", handleClickOutside)
+})
 
 onUnmounted(() => {
-    document.removeEventListener("click", handleClickOutside);
-});
+	document.removeEventListener("click", handleClickOutside)
+})
 </script>
 <template>
     <CreateTeamDialog v-if="showCreateTeamDialog" v-model="showCreateTeamDialog" />

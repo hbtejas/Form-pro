@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import AccessSection from "@/components/form/manage/AccessSection.vue";
-import DescriptionSection from "@/components/form/manage/DescriptionSection.vue";
-import { useManageForm } from "@/stores/form/manageForm";
-import { FileText, CaseLower, Lock } from "lucide-vue-next";
-import { formatPrettyDate } from "@/utils/date";
-import { TabButtons, LoadingText, Badge, Button } from "@/components/ui";
-import Avatar from "@/components/ui/Avatar.vue";
-import { useQueryParam } from "@/composables/useQueryParam";
+import AccessSection from "@/components/form/manage/AccessSection.vue"
+import DescriptionSection from "@/components/form/manage/DescriptionSection.vue"
+import { Badge, Button, LoadingText, TabButtons } from "@/components/ui"
+import Avatar from "@/components/ui/Avatar.vue"
+import { useQueryParam } from "@/composables/useQueryParam"
+import { useManageForm } from "@/stores/form/manageForm"
+import { formatPrettyDate } from "@/utils/date"
+import { CaseLower, FileText, Lock } from "lucide-vue-next"
 
-const manageFormStore = useManageForm();
+const manageFormStore = useManageForm()
 
 const tabs = [
-    {
-        label: "Description",
-        icon: CaseLower,
-        value: "description",
-    },
-    {
-        label: "Access",
-        icon: Lock,
-        value: "shared",
-    },
-] as any[];
+	{
+		label: "Description",
+		icon: CaseLower,
+		value: "description",
+	},
+	{
+		label: "Access",
+		icon: Lock,
+		value: "shared",
+	},
+] as any[]
 
-const validTabValues = tabs.map((t) => t.value);
-const selectedTab = useQueryParam<string>("tab", "description", validTabValues);
+const validTabValues = tabs.map((t) => t.value)
+const selectedTab = useQueryParam<string>("tab", "description", validTabValues)
 </script>
 
 <template>

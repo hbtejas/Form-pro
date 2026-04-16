@@ -1,69 +1,69 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import * as z from "zod";
 import {
-    Dialog,
-    Input as FormControl,
-    ErrorMessage,
-    Button,
-} from "@/components/ui";
-import Avatar from "@/components/ui/Avatar.vue";
-import { useTeam } from "@/stores/team";
-import { toast } from "vue-sonner";
-import api from "@/utils/api";
-import { Plus, Send, Trash } from "lucide-vue-next";
+	Button,
+	Dialog,
+	ErrorMessage,
+	Input as FormControl,
+} from "@/components/ui"
+import Avatar from "@/components/ui/Avatar.vue"
+import { useTeam } from "@/stores/team"
+import api from "@/utils/api"
+import { Plus, Send, Trash } from "lucide-vue-next"
+import { ref } from "vue"
+import { toast } from "vue-sonner"
+import * as z from "zod"
 
-const team = useTeam();
+const team = useTeam()
 
-const inviteEmails = ref<string[]>([]);
-const emailInput = ref("");
-const emailInputError = ref<string>("");
+const inviteEmails = ref<string[]>([])
+const emailInput = ref("")
+const emailInputError = ref<string>("")
 
-const emailSchema = z.string().email();
+const emailSchema = z.string().email()
 
 function addInviteEmail() {
-    const trimmed = emailInput.value.trim();
-    if (!trimmed) return;
-    const result = emailSchema.safeParse(trimmed);
-    if (!result.success) {
-        emailInputError.value = "Invalid email address";
-        return;
-    }
-    if (inviteEmails.value.includes(result.data)) {
-        emailInputError.value = "Email already added";
-        return;
-    }
-    inviteEmails.value.push(result.data);
-    emailInput.value = "";
-    emailInputError.value = "";
+	const trimmed = emailInput.value.trim()
+	if (!trimmed) return
+	const result = emailSchema.safeParse(trimmed)
+	if (!result.success) {
+		emailInputError.value = "Invalid email address"
+		return
+	}
+	if (inviteEmails.value.includes(result.data)) {
+		emailInputError.value = "Email already added"
+		return
+	}
+	inviteEmails.value.push(result.data)
+	emailInput.value = ""
+	emailInputError.value = ""
 }
 
 function removeInviteEmail(email: string) {
-    inviteEmails.value = inviteEmails.value.filter((e) => e !== email);
+	inviteEmails.value = inviteEmails.value.filter((e) => e !== email)
 }
 
-const isSending = ref(false);
+const isSending = ref(false)
 
 async function sendInvitationEmails() {
-    if (inviteEmails.value.length === 0) return;
-    isSending.value = true;
-    try {
-        await api.post(`/teams/${team.currentTeam?._id}/invite`, {
-            emails: inviteEmails.value,
-        });
-        toast.success("Invitations sent successfully");
-        open.value = false;
-        inviteEmails.value = [];
-    } catch (error: any) {
-        toast.error("Failed to send invitations", {
-            description: error.response?.data?.message || error.message,
-        });
-    } finally {
-        isSending.value = false;
-    }
+	if (inviteEmails.value.length === 0) return
+	isSending.value = true
+	try {
+		await api.post(`/teams/${team.currentTeam?._id}/invite`, {
+			emails: inviteEmails.value,
+		})
+		toast.success("Invitations sent successfully")
+		open.value = false
+		inviteEmails.value = []
+	} catch (error: any) {
+		toast.error("Failed to send invitations", {
+			description: error.response?.data?.message || error.message,
+		})
+	} finally {
+		isSending.value = false
+	}
 }
 
-const open = defineModel<boolean>({ required: true, default: false });
+const open = defineModel<boolean>({ required: true, default: false })
 </script>
 <template>
     <Dialog v-model="open">

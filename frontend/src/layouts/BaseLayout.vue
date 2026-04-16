@@ -54,18 +54,18 @@
     </div>
 </template>
 <script setup lang="ts">
-import { session } from "@/data/session";
-import { Popover, Sidebar, Button } from "@/components/ui";
-import { EllipsisVertical, LogOut } from "lucide-vue-next";
-import type { PropType } from "vue";
-import Avatar from "@/components/ui/Avatar.vue";
-import TeamSwitcher from "@/components/team/TeamSwitcher.vue";
+import TeamSwitcher from "@/components/team/TeamSwitcher.vue"
+import { Button, Popover, Sidebar } from "@/components/ui"
+import Avatar from "@/components/ui/Avatar.vue"
+import { session } from "@/data/session"
+import { EllipsisVertical, LogOut } from "lucide-vue-next"
+import type { PropType } from "vue"
 
 const props = defineProps({
-    sidebarSections: {
-        type: Array as PropType<any[]>,
-        default: () => [],
-    },
-});
+	sidebarSections: {
+		type: Array as PropType<any[]>,
+		default: () => [],
+	},
+})
 </script>
 

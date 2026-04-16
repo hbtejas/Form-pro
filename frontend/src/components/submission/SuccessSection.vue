@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { DotLottieVue } from "@lottiefiles/dotlottie-vue";
-import { useSubmissionForm } from "@/stores/submissionForm";
-import { computed } from "vue";
-import { TextEditor } from "@/components/ui";
+import { TextEditor } from "@/components/ui"
+import { useSubmissionForm } from "@/stores/submissionForm"
+import { DotLottieVue } from "@lottiefiles/dotlottie-vue"
+import { computed } from "vue"
 
-const submissionFormStore = useSubmissionForm();
+const submissionFormStore = useSubmissionForm()
 
 const isEmptyHtml = (html: string | null | undefined): boolean => {
-    if (!html) return true;
-    const textContent = html
-        .replace(/<[^>]*>/g, "") // Remove all HTML tags
-        .replace(/&nbsp;/g, " ") // Replace &nbsp; with space
-        .replace(/\s+/g, " ") // Normalize whitespace
-        .trim();
+	if (!html) return true
+	const textContent = html
+		.replace(/<[^>]*>/g, "") // Remove all HTML tags
+		.replace(/&nbsp;/g, " ") // Replace &nbsp; with space
+		.replace(/\s+/g, " ") // Normalize whitespace
+		.trim()
 
-    return textContent.length === 0;
-};
+	return textContent.length === 0
+}
 
 const successTitle = computed(() => {
-    return submissionFormStore.currentForm?.success_title || "Success!";
-});
+	return submissionFormStore.currentForm?.success_title || "Success!"
+})
 
 const successDescription = computed(() => {
-    const description = submissionFormStore.currentForm?.success_description;
-    if (!description || isEmptyHtml(description)) {
-        return "<p style='text-align: center;'>Thank you for submitting the form. We will get back to you soon.</p>";
-    }
-    return description;
-});
+	const description = submissionFormStore.currentForm?.success_description
+	if (!description || isEmptyHtml(description)) {
+		return "<p style='text-align: center;'>Thank you for submitting the form. We will get back to you soon.</p>"
+	}
+	return description
+})
 </script>
 <template>
     <div class="flex flex-col gap-4 items-center py-12">

@@ -1,5 +1,5 @@
 <script setup>
-const field = defineModel();
+const field = defineModel()
 </script>
 <template>
     <div></div>

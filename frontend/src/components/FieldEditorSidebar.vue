@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useEditForm } from "@/stores/editForm";
-import FieldPropertiesForm from "@/components/builder/field-editor/FieldPropertiesForm.vue";
+import FieldPropertiesForm from "@/components/builder/field-editor/FieldPropertiesForm.vue"
+import { useEditForm } from "@/stores/editForm"
 
-const editFormStore = useEditForm();
+const editFormStore = useEditForm()
 </script>
 <template>
     <div

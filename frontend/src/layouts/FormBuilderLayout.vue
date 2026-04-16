@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import FormBuilderHeader from "@/components/FormBuilderHeader.vue";
-import FormBuilderSidebar from "@/components/FormBuilderSidebar.vue";
-import FormBuilderContent from "@/components/FormBuilderContent.vue";
-import FieldEditorSidebar from "@/components/FieldEditorSidebar.vue";
+import FieldEditorSidebar from "@/components/FieldEditorSidebar.vue"
+import FormBuilderContent from "@/components/FormBuilderContent.vue"
+import FormBuilderHeader from "@/components/FormBuilderHeader.vue"
+import FormBuilderSidebar from "@/components/FormBuilderSidebar.vue"
 </script>
 <template>
     <div class="flex flex-col">

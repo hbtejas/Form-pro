@@ -43,20 +43,66 @@ Forms Pro is now a standard MERN application and can be set up in minutes.
    cd Form-pro
    ```
 
-2. **Backend Setup**:
+2. **Install all dependencies**:
    ```bash
-   cd backend
-   npm install
-   # Create .env file with MONGODB_URI and JWT_SECRET
-   npm start
+   npm run install:all
    ```
 
-3. **Frontend Setup**:
+3. **Configure backend environment**:
    ```bash
-   cd ../frontend
-   npm install
+   cd backend
+   # macOS/Linux
+   cp .env.example .env
+
+   # Windows PowerShell
+   Copy-Item .env.example .env
+   ```
+   Update `.env` values for your MongoDB and JWT secret.
+
+4. **Create a default admin user (first time only)**:
+   ```bash
+   cd ..
+   npm run setup:app
+   ```
+   Default login (customizable via env vars):
+   - Email: `admin@formpro.local`
+   - Password: `admin123456`
+
+5. **Run the full app (backend + frontend)**:
+   ```bash
    npm run dev
    ```
+
+Frontend runs on `http://localhost:5175` (or the next available port if occupied).
+Backend runs on `http://localhost:5000`.
+
+## ▲ Deploy To Vercel
+
+This repository is configured for a single Vercel project with:
+
+- Static frontend build from `frontend/`
+- Node serverless API from `backend/server.js`
+- SPA route fallback for Vue Router
+
+### 1. Import Project
+
+Import this repository in Vercel as a new project (root directory).
+
+### 2. Set Environment Variables (Vercel Project Settings)
+
+- `MONGODB_URI`
+- `JWT_SECRET`
+- `CORS_ORIGIN` (use your Vercel frontend URL, e.g. `https://your-app.vercel.app`)
+
+### 3. Deploy
+
+Trigger deployment from Vercel UI or push to your configured branch.
+
+### 4. Important Note About Uploads
+
+The current upload endpoint writes files to local disk (`backend/uploads`).
+On Vercel serverless functions, filesystem storage is ephemeral.
+For production uploads, move file storage to a persistent provider (for example Vercel Blob, S3, or Cloudinary).
 
 ## 🛠️ Tech Stack
 

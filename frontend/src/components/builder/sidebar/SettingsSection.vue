@@ -1,33 +1,40 @@
 <script setup lang="ts">
-import { Checkbox, Dialog, Input, TextEditor, Tooltip, Button } from "@/components/ui";
-import { useEditForm } from "@/stores/editForm";
-import { validateFormRoute } from "@/utils/form_generator";
-import { ref, watch } from "vue";
-import { CircleCheck } from "lucide-vue-next";
+import {
+	Button,
+	Checkbox,
+	Dialog,
+	Input,
+	TextEditor,
+	Tooltip,
+} from "@/components/ui"
+import { useEditForm } from "@/stores/editForm"
+import { validateFormRoute } from "@/utils/form_generator"
+import { CircleCheck } from "lucide-vue-next"
+import { ref, watch } from "vue"
 
-const editFormStore = useEditForm();
+const editFormStore = useEditForm()
 
-const showValidateMsg = ref(false);
-const routeExists = ref(false);
+const showValidateMsg = ref(false)
+const routeExists = ref(false)
 
 const validateRoute = async () => {
-    routeExists.value = await validateFormRoute(
-        editFormStore.currentFormId,
-        editFormStore.formData.route
-    );
-    showValidateMsg.value = true;
-};
+	routeExists.value = await validateFormRoute(
+		editFormStore.currentFormId,
+		editFormStore.formData.route,
+	)
+	showValidateMsg.value = true
+}
 
 watch(
-    () => editFormStore.formData.allow_incomplete,
-    (newVal) => {
-        if (newVal) {
-            editFormStore.formData.login_required = true;
-        }
-    }
-);
+	() => editFormStore.formData.allow_incomplete,
+	(newVal) => {
+		if (newVal) {
+			editFormStore.formData.login_required = true
+		}
+	},
+)
 
-const inExpandedDescription = ref(false);
+const inExpandedDescription = ref(false)
 </script>
 <template>
     <div class="space-y-4">

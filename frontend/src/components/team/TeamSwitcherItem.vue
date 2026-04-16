@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import TeamLogo from "./TeamLogo.vue";
+import TeamLogo from "./TeamLogo.vue"
 
 type props = {
-    label: string;
-    logoUrl: string | null;
-};
+	label: string
+	logoUrl: string | null
+}
 
-const props = defineProps<props>();
+const props = defineProps<props>()
 </script>
 <template>
     <div class="flex items-center gap-2 shrink-0">

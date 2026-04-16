@@ -1,25 +1,28 @@
 <script setup lang="ts">
-import { useEditForm } from "@/stores/editForm";
-import { formFields, type FormFields } from "@/utils/form_fields";
-import { ref, computed } from "vue";
-import type { Component } from "vue";
-import type { FormField } from "@/types/formfield";
-import { Input, Button } from "@/components/ui";
-import { Plus } from "lucide-vue-next";
+import { Button, Input } from "@/components/ui"
+import { useEditForm } from "@/stores/editForm"
+import type { FormField } from "@/types/formfield"
+import { type FormFields, formFields } from "@/utils/form_fields"
+import { Plus } from "lucide-vue-next"
+import { computed, ref } from "vue"
+import type { Component } from "vue"
 
-const componentMap = formFields.reduce((acc: Record<string, Component>, field: FormFields) => {
-    acc[field.name] = field.component;
-    return acc;
-}, {});
+const componentMap = formFields.reduce(
+	(acc: Record<string, Component>, field: FormFields) => {
+		acc[field.name] = field.component
+		return acc
+	},
+	{},
+)
 
-const search = ref("");
+const search = ref("")
 const filteredFields = computed(() => {
-    return editFormStore.doctypeFields.filter((field: FormField) => {
-        return field.label.toLowerCase().includes(search.value.toLowerCase());
-    });
-});
+	return editFormStore.doctypeFields.filter((field: FormField) => {
+		return field.label.toLowerCase().includes(search.value.toLowerCase())
+	})
+})
 
-const editFormStore = useEditForm();
+const editFormStore = useEditForm()
 </script>
 <template>
     <div class="flex flex-col gap-2">

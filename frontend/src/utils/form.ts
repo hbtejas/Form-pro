@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "./api"
 
 /**
  * Check if login is required for a form submission page.
@@ -8,13 +8,12 @@ import api from "./api";
  * @returns bool - True if login is required, False otherwise.
  */
 export async function isLoginRequired(route: string) {
-  try {
-    const response = await api.get("/forms/login-required", {
-      params: { route }
-    });
-    return response.data.loginRequired;
-  } catch (error) {
-    return false;
-  }
+	try {
+		const response = await api.get("/forms/login-required", {
+			params: { route },
+		})
+		return response.data.loginRequired
+	} catch (error) {
+		return false
+	}
 }
-

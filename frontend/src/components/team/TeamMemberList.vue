@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useTeam, type TeamMember } from "@/stores/team";
-import { Checkbox, Tooltip, Button } from "@/components/ui";
-import Avatar from "@/components/ui/Avatar.vue";
-import InviteMemberDialog from "./InviteMemberDialog.vue";
-import RemoveMemberDialog from "./RemoveMemberDialog.vue";
-import { Plus, Trash, Crown } from "lucide-vue-next";
+import { Button, Checkbox, Tooltip } from "@/components/ui"
+import Avatar from "@/components/ui/Avatar.vue"
+import { type TeamMember, useTeam } from "@/stores/team"
+import { Crown, Plus, Trash } from "lucide-vue-next"
+import { ref } from "vue"
+import InviteMemberDialog from "./InviteMemberDialog.vue"
+import RemoveMemberDialog from "./RemoveMemberDialog.vue"
 
-const teamStore = useTeam();
-const openInviteMemberDialog = ref<boolean>(false);
-const openRemoveMemberDialog = ref<boolean>(false);
-const memberToRemove = ref<TeamMember | null>(null);
+const teamStore = useTeam()
+const openInviteMemberDialog = ref<boolean>(false)
+const openRemoveMemberDialog = ref<boolean>(false)
+const memberToRemove = ref<TeamMember | null>(null)
 
 function handleMemberRemoval(row: TeamMember) {
-    memberToRemove.value = row;
-    openRemoveMemberDialog.value = true;
+	memberToRemove.value = row
+	openRemoveMemberDialog.value = true
 }
 </script>
 <template>

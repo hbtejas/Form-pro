@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useSubmissionForm } from "@/stores/submissionForm";
-import { LoadingIndicator, TextEditor } from "@/components/ui";
+import { LoadingIndicator, TextEditor } from "@/components/ui"
+import { useSubmissionForm } from "@/stores/submissionForm"
 
-const submissionFormStore = useSubmissionForm();
+const submissionFormStore = useSubmissionForm()
 </script>
 <template>
     <div v-if="submissionFormStore.isLoading">
