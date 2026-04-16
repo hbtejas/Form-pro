@@ -19,8 +19,8 @@ export default defineConfig({
 		},
 	},
 	server: {
-		port: 5175,
-		strictPort: true,
+		port: Number(process.env.VITE_PORT) || 5175,
+		strictPort: false,
 		watch: {
 			ignored: [
 				"**/.git/**",
